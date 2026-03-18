@@ -369,7 +369,7 @@ main {
 
 .prod-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr !important;
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
@@ -393,8 +393,9 @@ main {
 }
 
 .prod-opt.selected {
-  background: var(--black) !important;
-  color: var(--white);
+  border-color: var(--black);
+  background: var(--white);
+  color: var(--black);
 }
 
 .prod-opt.selected .po-stk {

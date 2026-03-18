@@ -11,6 +11,9 @@ function showTrack() {
   document.getElementById('trackOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
+  document.getElementById('trackIdInput').value = '';
+  document.getElementById('trackVerifyInput').value = '';
+
   // Auto-load last order if we have one stored
   const lastId = localStorage.getItem('frames_last_order_id');
   if (lastId) {
@@ -41,7 +44,8 @@ function lookupOrder(overrideId) {
   const verify  = vInput.value.trim().toLowerCase();
 
   if (!orderId) { showTrackError('Please enter an Order ID.'); return; }
-  if (!verify)  { showTrackError('Please enter your Phone or Email for verification.'); return; }
+  // Removed strict requirement for verification input; will only verify if present
+  // if (!verify)  { showTrackError('Please enter your Phone or Email for verification.'); return; }
 
   // Show loading
   document.getElementById('trackEmpty').classList.add('hidden');
@@ -62,16 +66,16 @@ function lookupOrder(overrideId) {
       return;
     }
 
-    // VERIFICATION CHECK
-    const dbPhone = order.phone.replace(/\D/g, ''); // digits only
-    const dbEmail = order.email.toLowerCase();
-    const inputClean = verify.replace(/\D/g, '');
-
-    const isMatch = (verify === dbEmail) || (inputClean && dbPhone.endsWith(inputClean) && inputClean.length >= 4);
-
-    if (!isMatch) {
-      showTrackError('Verification failed. The Phone or Email does not match this order.');
-      return;
+    // VERIFICATION CHECK (Only if verification input is provided)
+    if (verify) {
+      const dbPhone = order.phone.replace(/\D/g, ''); // digits only
+      const dbEmail = order.email?.toLowerCase();
+      const inputClean = verify.replace(/\D/g, '');
+      const isMatch = (verify === dbEmail) || (inputClean && dbPhone.endsWith(inputClean) && inputClean.length >= 4);
+      if (!isMatch) {
+         showTrackError('Verification failed. The Phone or Email does not match this order.');
+         return;
+      }
     }
 
     // Check for status change vs last seen (for in-app notification)

@@ -73,11 +73,23 @@ export default async function handler(req, res) {
       };
 
       try {
+        // 1. Send to User
         await sendEmailJS(process.env.EMAILJS_ORDER_TEMPLATE_ID, templateParams);
-        // Also notify admin
-        await sendEmailJS(process.env.EMAILJS_ADMIN_TEMPLATE_ID, {
-          title: 'New Order: ' + order.id,
-          message: `${order.name} ordered ${order.qty}x ${order.productName} for £${order.total} (${order.payment})`
+        
+        // 2. Send to Admin (Detailed)
+          message: `
+            NEW ORDER: ${order.id}
+            
+            Customer: ${order.name}
+            Item: ${order.productName} (x${order.qty})
+            Total: £${order.total}
+            Phone: ${order.phone}
+            Email: ${order.email}
+            Location: ${order.location}
+            Payment: ${order.payment}
+            
+            Contact Customer via WhatsApp: https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + process.env.BRAND_NAME + ' regarding your order ' + order.id)}
+          `
         });
       } catch (e) {
         console.error('Email warning:', e);
