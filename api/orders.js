@@ -14,7 +14,7 @@ async function sendOrderEmails(order) {
   // 1. Send to Customer
   try {
     await resend.emails.send({
-      from: `${brandName} <orders@resend.dev>`, // Generic resend address unless domain verified
+      from: 'onboarding@resend.dev', // Use default for unverified domains
       to: order.email,
       subject: `Order Confirmed: ${order.id}`,
       html: `
@@ -40,7 +40,7 @@ async function sendOrderEmails(order) {
   // 2. Send to Admin
   try {
     await resend.emails.send({
-      from: 'rto.GiO Alerts <alerts@resend.dev>',
+      from: 'onboarding@resend.dev',
       to: adminEmail,
       subject: `NEW ORDER: ${order.id} - ${order.name}`,
       html: `
@@ -69,7 +69,7 @@ async function sendStatusEmail({ to_name, to_email, order_id, status_title, stat
   
   try {
     await resend.emails.send({
-      from: `${brandName} <updates@resend.dev>`,
+      from: 'onboarding@resend.dev',
       to: to_email,
       subject: `Update on Order ${order_id}: ${status_title}`,
       html: `
