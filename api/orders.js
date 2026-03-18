@@ -126,8 +126,12 @@ export default async function handler(req, res) {
         console.log(`[API/Orders] Data exists: ${snap.exists()}`);
         
         if (snap.exists()) {
-          let data = snap.val();
-          const orders = Object.values(data);
+          const data = snap.val();
+          const orders = Object.entries(data).map(([key, val]) => ({
+            ...val,
+            id: val.id || key // Use existing id or fallback to database key
+          }));
+          
           console.log(`[API/Orders] Returning ${orders.length} orders`);
           
           if (excludeProofs === 'true') {
