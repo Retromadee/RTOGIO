@@ -2,6 +2,7 @@ import { getDbInstance, ref, get, set, update, child } from './utils/db.js';
 import { verifyAuth } from './utils/auth.js';
 
 async function sendEmailJS(templateId, params) {
+  console.log(`[EmailJS] Sending template ${templateId} to ${params.to_email || 'Admin'}`);
   const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -48,6 +49,7 @@ export default async function handler(req, res) {
     try {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const order = body;
+      console.log(`[Order API] Processing order ${order.id} for ${order.email}`);
       order.createdAt = new Date().toISOString();
 
       // Decrement stock
@@ -93,8 +95,9 @@ export default async function handler(req, res) {
             Contact Customer via WhatsApp: https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + (process.env.BRAND_NAME || 'rto.GiO') + ' regarding your order ' + order.id)}
           `
         });
+        console.log('[Order API] All notification emails triggered successfully.');
       } catch (e) {
-        console.error('Email warning:', e);
+        console.error('[Order API] Notification Error:', e.message);
         // We still return success for the order
       }
 
