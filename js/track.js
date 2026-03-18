@@ -48,9 +48,16 @@ function lookupOrder(overrideId) {
   // Detach previous listener
   detachCurrentTrackListener();
 
+  // Safety timeout
+  const timeout = setTimeout(() => {
+    if (document.getElementById('trackLoading').classList.contains('hidden')) return;
+    showTrackError('Search timed out. Please check your connection and try again.');
+  }, 10000);
+
   // Set up new real-time listener
   _activeTrackId  = orderId;
   _activeTrackRef = listenToOrder(orderId, order => {
+    clearTimeout(timeout);
     document.getElementById('trackLoading').classList.add('hidden');
 
     if (!order) {
