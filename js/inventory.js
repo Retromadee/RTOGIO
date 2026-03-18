@@ -3,10 +3,15 @@
    ═══════════════════════════════════════════════════════════════ */
 
 let inventoryData = [];
+let lastInventoryJson = '';
 
 function initInventory() {
   seedInventoryIfEmpty().then(() => {
     listenToInventory(items => {
+      const currentJson = JSON.stringify(items);
+      if (currentJson === lastInventoryJson) return; // No change, skip render to prevent flicker
+      
+      lastInventoryJson = currentJson;
       inventoryData = items;
       renderInventoryGrid();
       renderProdGrid();
