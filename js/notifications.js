@@ -1,25 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════
-   FRAMES — Notifications (Email + WhatsApp)
+   FRAMES — Notifications (WhatsApp Helpers)
    ═══════════════════════════════════════════════════════════════ */
 
-// ── EMAILJS INIT ──────────────────────────────────────────────────────────────
-// Now completely handled server-side
-
-function initEmailJS() {
-  // no-op
-}
-
-async function sendOrderConfirmationEmail(order) {
-  // Handled by backend `/api/orders` POST
-}
-
-async function sendStatusUpdateEmail(order, statusObj) {
-  // Handled by `/api/email` POST in admin.js
-}
-
-async function sendAdminProofEmail(order) {
-  // Handled by backend `/api/upload-proof` POST
-}
+function initEmailJS() {}
+async function sendOrderConfirmationEmail() {}
+async function sendStatusUpdateEmail() {}
+async function sendAdminProofEmail() {}
 
 // ── WHATSAPP ──────────────────────────────────────────────────────────────────
 

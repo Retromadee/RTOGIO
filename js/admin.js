@@ -47,8 +47,6 @@ async function logout() {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
 function initAdmin() {
-  initEmailJS();
-
   // Load orders
   listenToAllOrders(orders => {
     _adminOrders = orders;
@@ -153,6 +151,9 @@ async function advanceOrderStatus(orderId, currentIdx) {
   try {
     await updateOrderStatus(orderId, nextIdx, nextStatus.key);
     adminToast(`✓ Order ${orderId} → ${nextStatus.title}`);
+    
+    // Automatically trigger the status update email
+    sendEmailNotif(orderId);
   } catch (err) {
     adminToast('⚠️ Failed to update status. Check connection.');
     console.error(err);
