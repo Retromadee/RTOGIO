@@ -115,17 +115,22 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'Order not found' });
       } else {
         // Admin: List all orders
-        if (!verifyAuth(req)) return res.status(401).json({ error: 'Unauthorized' });
+        const isAuthed = verifyAuth(req);
+        console.log(`[API/Orders] Admin List Request - Authed: ${isAuthed}`);
+        
+        if (!isAuthed) return res.status(401).json({ error: 'Unauthorized' });
         
         const { excludeProofs } = req.query;
         const snap = await get(ref(db, 'orders'));
         
+        console.log(`[API/Orders] Data exists: ${snap.exists()}`);
+        
         if (snap.exists()) {
           let data = snap.val();
           const orders = Object.values(data);
+          console.log(`[API/Orders] Returning ${orders.length} orders`);
           
           if (excludeProofs === 'true') {
-            // Strip large base64 strings to save bandwidth
             orders.forEach(o => {
                if (o.proofOfPayment) o.hasProof = true;
                delete o.proofOfPayment;
