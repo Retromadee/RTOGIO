@@ -108,7 +108,7 @@ function renderOrdersTable(orders) {
         <td>${order.productName} × ${order.qty}</td>
         <td>${CONFIG.currency}${(order.total || 0).toLocaleString()}</td>
         <td>${order.payment}
-            ${order.proofOfPayment ? `<br><a href="#" onclick="viewProof('${order.id}'); return false;" style="font-size:0.65rem;color:var(--gray);text-decoration:underline;">📎 View Proof</a>` : ''}
+            ${(order.hasProof || order.proofOfPayment) ? `<br><a href="#" onclick="viewProof('${order.id}'); return false;" style="font-size:0.65rem;color:var(--gray);text-decoration:underline;">📎 View Proof</a>` : ''}
         </td>
         <td><span class="status-badge ${order.statusKey}">${status.title}</span></td>
         <td style="font-size:.65rem;color:var(--gray);">${dateStr}</td>
@@ -132,11 +132,21 @@ function buildWALink(order) {
   return generateWhatsAppLink(order.phone, msg);
 }
 
-function viewProof(orderId) {
-  const order = _adminOrders.find(o => o.id === orderId);
-  if (order && order.proofOfPayment) {
-    const win = window.open();
-    win.document.write(`<title>Proof of Payment - ${order.id}</title><img src="${order.proofOfPayment}" style="max-width:100%; display:block; margin:auto;">`);
+async function viewProof(orderId) {
+  adminToast('Loading proof...');
+  try {
+    const res = await fetch(`/api/orders?id=${encodeURIComponent(orderId)}`);
+    if (res.ok) {
+      const order = await res.json();
+      if (order.proofOfPayment) {
+        const win = window.open();
+        win.document.write(`<title>Proof of Payment - ${order.id}</title><img src="${order.proofOfPayment}" style="max-width:100%; display:block; margin:auto;">`);
+      } else {
+        adminToast('No proof found for this order.');
+      }
+    }
+  } catch(e) {
+    adminToast('Failed to load proof.');
   }
 }
 

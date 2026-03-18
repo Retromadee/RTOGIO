@@ -116,10 +116,23 @@ export default async function handler(req, res) {
       } else {
         // Admin: List all orders
         if (!verifyAuth(req)) return res.status(401).json({ error: 'Unauthorized' });
+        
+        const { excludeProofs } = req.query;
         const snap = await get(ref(db, 'orders'));
+        
         if (snap.exists()) {
-          const data = snap.val();
-          return res.status(200).json(Object.values(data));
+          let data = snap.val();
+          const orders = Object.values(data);
+          
+          if (excludeProofs === 'true') {
+            // Strip large base64 strings to save bandwidth
+            orders.forEach(o => {
+               if (o.proofOfPayment) o.hasProof = true;
+               delete o.proofOfPayment;
+            });
+          }
+          
+          return res.status(200).json(orders);
         }
         return res.status(200).json([]);
       }
