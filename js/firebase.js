@@ -10,6 +10,7 @@ async function fetchConfig() {
   if (res.ok) {
     const data = await res.json();
     Object.assign(CONFIG, data);
+    if (typeof setPaymentInfo === 'function') setPaymentInfo();
   }
 }
 // Load config on startup
@@ -31,6 +32,7 @@ async function seedInventoryIfEmpty() {
 
 let _invTimer = null;
 function listenToInventory(callback) {
+  if (_invTimer) clearInterval(_invTimer);
   const poll = async () => {
     try {
       const res = await fetch('/api/inventory', { cache: 'no-store' });
@@ -102,6 +104,7 @@ async function updateOrderStatus(orderId, statusIdx, statusKey) {
 
 let _adminOrderTimer = null;
 function listenToAllOrders(callback) {
+  if (_adminOrderTimer) clearInterval(_adminOrderTimer);
   const poll = async () => {
     try {
       const res = await fetch('/api/orders', { cache: 'no-store' });

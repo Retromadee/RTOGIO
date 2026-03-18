@@ -26,7 +26,7 @@ body {
   background: var(--white);
   color: var(--black);
   font-family: 'Courier Prime', monospace;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
 }
 
@@ -1069,7 +1069,7 @@ main {
 
 .admin-body {
   background: var(--white);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* PIN SCREEN */

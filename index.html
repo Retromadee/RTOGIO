@@ -168,7 +168,11 @@
   <div class="overlay" id="orderOverlay">
     <div class="overlay-inner">
       <div class="overlay-top">
-        <div class="overlay-title">New Order</div>
+        <div style="display:flex; align-items:center; gap:.5rem;">
+          <button class="x-btn" id="btnS1Back" onclick="goStep(1)" style="display:none; font-size:1.2rem;">←</button>
+          <button class="x-btn" id="btnS2Back" onclick="goStep(2)" style="display:none; font-size:1.2rem;">←</button>
+          <div class="overlay-title">New Order</div>
+        </div>
         <button class="x-btn" onclick="closeOrder()">✕</button>
       </div>
 

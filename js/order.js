@@ -16,15 +16,16 @@ function openOrder(productId) {
   document.getElementById('orderOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   goStep(1);
-  if (productId) {
-    // Wait for inventory to load if needed
-    const trySelect = () => {
-      const p = getProduct(productId);
-      if (p) selectProduct(productId);
-      else setTimeout(trySelect, 100);
-    };
-    trySelect();
-  }
+  const trySelect = () => {
+    // If no productId provided, auto-select the first product in inventory
+    const idToSelect = productId || (window._inventory && window._inventory.length > 0 ? window._inventory[0].id : null);
+    if (idToSelect && getProduct(idToSelect)) {
+      selectProduct(idToSelect);
+    } else {
+      setTimeout(trySelect, 100);
+    }
+  };
+  trySelect();
 }
 
 function closeOrder() {
@@ -43,6 +44,13 @@ function goStep(n) {
     else if (i < n)   sb.classList.add('done');
   });
   orderState.currentStep = n;
+  
+  // Toggle top back buttons
+  const b1 = document.getElementById('btnS1Back');
+  const b2 = document.getElementById('btnS2Back');
+  if (b1) b1.style.display = (n === 2) ? 'inline-block' : 'none';
+  if (b2) b2.style.display = (n === 3) ? 'inline-block' : 'none';
+
   document.getElementById('orderOverlay').scrollTo(0, 0);
   if (n === 3) fillStep3Review();
 }
