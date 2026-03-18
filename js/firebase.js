@@ -35,7 +35,7 @@ function listenToInventory(callback) {
   if (_invTimer) clearInterval(_invTimer);
   const poll = async () => {
     try {
-      const res = await fetch('/api/inventory', { cache: 'no-store' });
+      const res = await fetch('/api/inventory', { cache: 'no-store', credentials: 'same-origin' });
       if (res.ok) {
         const data = await res.json();
         // Dynamic pricing: increase to £30 when stock falls below 11
@@ -68,18 +68,37 @@ async function updateProduct(productId, fields) {
   }
   const res = await fetch('/api/inventory', {
     method: 'PUT',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: productId, updates: fields })
   });
   if (!res.ok) throw new Error('Update failed');
 }
 
+async function addProduct(product) {
+  const res = await fetch('/api/inventory', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(product)
+  });
+  if (!res.ok) throw new Error('Add failed');
+}
+
+async function deleteProduct(productId) {
+  const res = await fetch('/api/inventory?id=' + encodeURIComponent(productId), {
+    method: 'DELETE',
+    credentials: 'same-origin'
+  });
+  if (!res.ok) throw new Error('Delete failed');
+}
+
 // ── ORDERS ────────────────────────────────────────────────────────────────────
 
 async function saveOrder(order) {
-  // This sends the order to the backend, which saves it AND triggers the email.
   const res = await fetch('/api/orders', {
     method: 'POST',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
   });
@@ -88,11 +107,6 @@ async function saveOrder(order) {
 
 let _orderTimer = null;
 function listenToOrder(orderId, callback) {
-  // In the real app, we need an endpoint to fetch a single order. 
-  // Let's create a polling mechanism for demo purposes.
-  // Wait, /api/orders GET is admin-only. We don't expose single orders publicly for security.
-  // The local tracking screen just simulates it or uses a specific endpoint if we make one.
-  // Let's assume it gets its local status.
   return {}; 
 }
 
@@ -103,6 +117,7 @@ function detachOrderListener() {
 async function updateOrderStatus(orderId, statusIdx, statusKey) {
   const res = await fetch('/api/orders', {
     method: 'PUT',
+    credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ id: orderId, updates: { statusIdx, statusKey } })
   });
@@ -114,7 +129,7 @@ function listenToAllOrders(callback) {
   if (_adminOrderTimer) clearInterval(_adminOrderTimer);
   const poll = async () => {
     try {
-      const res = await fetch('/api/orders', { cache: 'no-store' });
+      const res = await fetch('/api/orders', { cache: 'no-store', credentials: 'same-origin' });
       if (res.ok) {
         const orders = await res.json();
         orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));

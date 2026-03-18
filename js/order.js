@@ -18,7 +18,7 @@ function openOrder(productId) {
   goStep(1);
   const trySelect = () => {
     // If no productId provided, auto-select the first product in inventory
-    const idToSelect = productId || (window._inventory && window._inventory.length > 0 ? window._inventory[0].id : null);
+    const idToSelect = productId || (inventoryData && inventoryData.length > 0 ? inventoryData[0].id : null);
     if (idToSelect && getProduct(idToSelect)) {
       selectProduct(idToSelect);
     } else {
