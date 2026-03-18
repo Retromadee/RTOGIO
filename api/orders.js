@@ -16,7 +16,7 @@ async function sendOrderEmails(order) {
     await resend.emails.send({
       from: 'onboarding@resend.dev', // Use default for unverified domains
       to: order.email,
-      subject: `Order Confirmed: ${order.id}`,
+      subject: `rto.GiO Order Confirmed : ${order.id}`,
       html: `
         <div style="font-family:sans-serif; max-width:600px; margin:0 auto; border:1px solid #eee; padding:20px;">
           <h2 style="color:#000;">Thank you for your order, ${order.name}!</h2>
@@ -42,7 +42,7 @@ async function sendOrderEmails(order) {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: adminEmail,
-      subject: `NEW ORDER: ${order.id} - ${order.name}`,
+      subject: `rto.GiO NEW ORDER : ${order.id} - ${order.name}`,
       html: `
         <div style="font-family:sans-serif; padding:20px;">
           <h3>New Order Received</h3>
@@ -71,7 +71,7 @@ async function sendStatusEmail({ to_name, to_email, order_id, status_title, stat
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: to_email,
-      subject: `Update on Order ${order_id}: ${status_title}`,
+      subject: `rto.GiO Update on Order ${order_id}: ${status_title}`,
       html: `
         <div style="font-family:sans-serif; max-width:600px; margin:0 auto; border:1px solid #eee; padding:20px;">
           <h2 style="color:#000;">Order Update</h2>
