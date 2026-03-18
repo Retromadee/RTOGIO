@@ -150,14 +150,22 @@ function listenToAllOrders(callback) {
       const res = await fetch('/api/orders?excludeProofs=true', { cache: 'no-store', credentials: 'same-origin' });
       if (res.ok) {
         const orders = await res.json();
+        if (!Array.isArray(orders)) {
+          console.error('[FRAMES] Orders API returned non-array:', orders);
+          return;
+        }
         orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         callback(orders);
-      } else if (res.status === 401) {
-         // Token expired
-         detachAllOrdersListener();
-         if(typeof logout === 'function') logout();
+      } else {
+        console.warn(`[FRAMES] Orders API failed: ${res.status} ${res.statusText}`);
+        if (res.status === 401) {
+           detachAllOrdersListener();
+           if(typeof logout === 'function') logout();
+        }
       }
-    } catch(e) {}
+    } catch(e) {
+      console.error('[FRAMES] Orders Poll Catch:', e);
+    }
   };
   poll();
   _adminOrderTimer = setInterval(poll, 5000);
