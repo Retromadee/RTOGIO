@@ -21,6 +21,11 @@ async function sendEmailJS(templateId, params) {
 }
 
 export default async function handler(req, res) {
+  // Prevent Vercel caching
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const db = getDbInstance();
 
   if (req.method === 'GET') {

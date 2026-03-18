@@ -33,7 +33,7 @@ let _invTimer = null;
 function listenToInventory(callback) {
   const poll = async () => {
     try {
-      const res = await fetch('/api/inventory');
+      const res = await fetch('/api/inventory', { cache: 'no-store' });
       if (res.ok) callback(await res.json());
     } catch(e) {}
   };
@@ -104,7 +104,7 @@ let _adminOrderTimer = null;
 function listenToAllOrders(callback) {
   const poll = async () => {
     try {
-      const res = await fetch('/api/orders');
+      const res = await fetch('/api/orders', { cache: 'no-store' });
       if (res.ok) {
         const orders = await res.json();
         orders.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
