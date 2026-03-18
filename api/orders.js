@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function sendOrderEmails(order) {
   const brandName = process.env.BRAND_NAME || 'rto.GiO';
-  const adminEmail = process.env.ADMIN_EMAIL || 'retromadee@gmail.com'; // Fallback admin email
+  const adminEmailList = (process.env.ADMIN_EMAIL || 'only1retromade@gmail.com').split(',').map(e => e.trim());
   const adminWhatsApp = process.env.ADMIN_WHATSAPP || '905338365711';
   
   const waUserLink = `https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + brandName + ' regarding your order ' + order.id)}`;
@@ -41,7 +41,7 @@ async function sendOrderEmails(order) {
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
-      to: adminEmail,
+      to: adminEmailList,
       subject: `rto.GiO NEW ORDER : ${order.id} - ${order.name}`,
       html: `
         <div style="font-family:sans-serif; padding:20px;">
@@ -58,7 +58,7 @@ async function sendOrderEmails(order) {
         </div>
       `
     });
-    console.log(`[Resend] Admin alert sent to ${adminEmail}`);
+    console.log(`[Resend] Admin alert sent to ${adminEmailList.join(', ')}`);
   } catch (err) {
     console.error('[Resend] Admin Email Error:', err.message);
   }
