@@ -77,6 +77,8 @@ export default async function handler(req, res) {
         await sendEmailJS(process.env.EMAILJS_ORDER_TEMPLATE_ID, templateParams);
         
         // 2. Send to Admin (Detailed)
+        await sendEmailJS(process.env.EMAILJS_ADMIN_TEMPLATE_ID, {
+          title: 'NEW ORDER: ' + order.id,
           message: `
             NEW ORDER: ${order.id}
             
@@ -88,7 +90,7 @@ export default async function handler(req, res) {
             Location: ${order.location}
             Payment: ${order.payment}
             
-            Contact Customer via WhatsApp: https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + process.env.BRAND_NAME + ' regarding your order ' + order.id)}
+            Contact Customer via WhatsApp: https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + (process.env.BRAND_NAME || 'rto.GiO') + ' regarding your order ' + order.id)}
           `
         });
       } catch (e) {
