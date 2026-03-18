@@ -119,7 +119,7 @@ function listenToOrder(orderId, callback) {
         callback(null);
       }
     } catch(e) {
-      console.error('[FRAMES] Track poll error:', e);
+      console.error('[FRAMES] listenToOrder Catch:', e);
     }
   };
   poll();
