@@ -36,7 +36,14 @@ function listenToInventory(callback) {
   const poll = async () => {
     try {
       const res = await fetch('/api/inventory', { cache: 'no-store' });
-      if (res.ok) callback(await res.json());
+      if (res.ok) {
+        const data = await res.json();
+        // Dynamic pricing: increase to £30 when stock falls below 11
+        data.forEach(p => {
+          if (p.stock < 11) p.price = 30;
+        });
+        callback(data);
+      }
     } catch(e) {}
   };
   poll();

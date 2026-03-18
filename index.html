@@ -352,16 +352,16 @@
             </div>
           </div>
 
-          <button class="btn-ghost" onclick="window.print()">⎙ Print / Save Invoice</button>
-
           <!-- PROOF OF PAYMENT UPLOAD -->
-          <div id="proofSection" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--line);">
+          <div id="proofSection" style="display:none; margin-top:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--line);">
             <div style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">Payment Verification</div>
             <div style="font-size:.85rem; margin-bottom:1rem; line-height:1.5;">Please upload your transfer screenshot below based on the generated invoice above to speed up verification.</div>
             <input type="file" id="proofFile" accept="image/*" style="display:none;" onchange="handleProofUpload(event)">
             <button class="btn-primary" id="btnProofUpload" onclick="document.getElementById('proofFile').click()">📎 Attach Proof of Payment</button>
             <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof attached and sent to admin!</div>
           </div>
+
+          <button class="btn-ghost" onclick="window.print()">⎙ Print / Save Invoice</button>
 
           <button class="btn-ghost mt1" onclick="showTrackFromOrder()">→ Track This Order</button>
           <button class="btn-ghost mt1" onclick="closeOrder()">← Back to Collection</button>

@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Serverless backend",
   "type": "module",
-  "scripts": {
-    "dev": "vercel dev"
-  },
   "dependencies": {
     "cookie": "^0.6.0",
     "firebase": "^12.10.0"

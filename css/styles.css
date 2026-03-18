@@ -369,7 +369,7 @@ main {
 
 .prod-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
@@ -1513,7 +1513,7 @@ main {
   }
 
   .prod-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
   }
 
   .inv-doc-header {
