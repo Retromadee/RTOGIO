@@ -13,15 +13,7 @@ function showTrack() {
 
   document.getElementById('trackIdInput').value = '';
   document.getElementById('trackVerifyInput').value = '';
-
-  // Auto-load last order if we have one stored
-  const lastId = localStorage.getItem('frames_last_order_id');
-  if (lastId) {
-    document.getElementById('trackIdInput').value = lastId;
-    lookupOrder(lastId);
-  } else {
-    showTrackEmpty();
-  }
+  showTrackEmpty();
 }
 
 function closeTrack() {

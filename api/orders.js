@@ -103,16 +103,28 @@ export default async function handler(req, res) {
   const db = getDbInstance();
 
   if (req.method === 'GET') {
-    // Admin only
-    if (!verifyAuth(req)) return res.status(401).json({ error: 'Unauthorized' });
+    const { id } = req.query;
+
     try {
-      const snap = await get(ref(db, 'orders'));
-      if (snap.exists()) {
-        const data = snap.val();
-        return res.status(200).json(Object.values(data));
+      if (id) {
+        // Public: Track specific order
+        const snap = await get(ref(db, `orders/${id}`));
+        if (snap.exists()) {
+          return res.status(200).json(snap.val());
+        }
+        return res.status(404).json({ error: 'Order not found' });
+      } else {
+        // Admin: List all orders
+        if (!verifyAuth(req)) return res.status(401).json({ error: 'Unauthorized' });
+        const snap = await get(ref(db, 'orders'));
+        if (snap.exists()) {
+          const data = snap.val();
+          return res.status(200).json(Object.values(data));
+        }
+        return res.status(200).json([]);
       }
-      return res.status(200).json([]);
     } catch (err) {
+      console.error(err);
       return res.status(500).json({ error: 'Failed' });
     }
   }

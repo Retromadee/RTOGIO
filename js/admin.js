@@ -190,47 +190,68 @@ async function sendEmailNotif(orderId) {
 // ── INVENTORY EDITOR ──────────────────────────────────────────────────────────
 
 function renderAdminInventory(items) {
-  const list = document.getElementById('adminInventoryList');
+  const list = document.getElementById('adminInvRow');
   if (!list) return;
   list.innerHTML = '';
   items.forEach(product => {
+    // We use CONFIG.maxStock as a fallback, but per-product maxStock is better if we have it
+    const max = product.maxStock || CONFIG.maxStock || 24;
+    const pct = (product.stock / max) * 100;
+
     list.innerHTML += `
-      <div class="inv-editor" style="margin-bottom: 1rem;">
-        <div class="inv-editor-header" style="grid-template-columns: 1fr 1fr 120px 140px 200px;">
-          <span>Name</span>
-          <span>Image Path</span>
-          <span>Price (£)</span>
-          <span>Stock</span>
-          <span></span>
+      <div class="inv-editor-cell" style="padding-right:1rem;">
+        <input type="text" id="editName_${product.id}" value="${product.name}">
+      </div>
+      <div class="inv-editor-cell">
+        <input type="number" id="editPrice_${product.id}" value="${product.price}" min="0">
+      </div>
+      <div class="inv-editor-cell">
+        <div style="display:flex; align-items:center; gap:.5rem;">
+          <input type="number" id="editStock_${product.id}" value="${product.stock}" min="0" max="${max}" style="width:70px;" oninput="onStockInput('${product.id}', ${max})">
+          <span style="font-size:0.65rem; color:var(--gray);">/ ${max}</span>
         </div>
-        <div class="inv-editor-row" style="grid-template-columns: 1fr 1fr 120px 140px 200px;">
-          <div class="inv-editor-cell"><input type="text" id="editName_${product.id}" value="${product.name}"></div>
-          <div class="inv-editor-cell"><input type="text" id="editImage_${product.id}" value="${product.image || 'images/product.jpg'}"></div>
-          <div class="inv-editor-cell"><input type="number" id="editPrice_${product.id}" value="${product.price}" min="0"></div>
-          <div class="inv-editor-cell">
-            <input type="number" id="editStock_${product.id}" value="${product.stock}" min="0" max="24" oninput="onStockInput('${product.id}')">
-            <div class="stock-bar-admin">
-              <div class="stock-bar-admin-fill" id="stockBarFill_${product.id}" style="width:${(product.stock/CONFIG.maxStock)*100}%"></div>
-            </div>
-          </div>
-          <div class="inv-editor-cell" style="display:flex;gap:.5rem;">
-            <button class="save-inv-btn" id="saveInvBtn_${product.id}" onclick="saveProductEdits('${product.id}')">Save</button>
-            <button class="save-inv-btn" onclick="deleteProduct('${product.id}')" style="background:#dc3545;border-color:#dc3545;">Delete</button>
-          </div>
+        <div class="stock-bar-admin" style="margin-top:5px;">
+          <div class="stock-bar-admin-fill" id="stockBarFill_${product.id}" style="width:${pct}%"></div>
         </div>
+      </div>
+      <div class="inv-editor-cell">
+        <input type="number" id="editMax_${product.id}" value="${max}" min="1" step="1" style="width:80px;">
+      </div>
+      <div class="inv-editor-cell" style="display:flex;gap:.5rem;">
+        <button class="save-inv-btn" id="saveInvBtn_${product.id}" onclick="saveProductEdits('${product.id}')">Save</button>
+        <button class="save-inv-btn" onclick="restockItem('${product.id}')" style="background:var(--gray);border-color:var(--gray);">Restock</button>
       </div>
     `;
   });
 }
 
-function onStockInput(id) {
-  const val = parseInt(document.getElementById('editStock_' + id).value) || 0;
-  const clamped = Math.max(0, Math.min(CONFIG.maxStock, val));
-  if (val > CONFIG.maxStock) {
-    document.getElementById('editStock_' + id).value = CONFIG.maxStock;
-  }
+function onStockInput(id, max) {
+  const input = document.getElementById('editStock_' + id);
+  const val = parseInt(input.value) || 0;
+  const clamped = Math.max(0, Math.min(max, val));
+  if (val > max) input.value = max;
   const fill = document.getElementById('stockBarFill_' + id);
-  if (fill) fill.style.width = (clamped / CONFIG.maxStock) * 100 + '%';
+  if (fill) fill.style.width = (clamped / max) * 100 + '%';
+}
+
+async function restockItem(id) {
+  const max = parseInt(document.getElementById('editMax_' + id).value) || 24;
+  document.getElementById('editStock_' + id).value = max;
+  onStockInput(id, max);
+  await saveProductEdits(id);
+}
+
+async function restockAllToMax() {
+  if (!confirm('Restock all products to their maximum capacity?')) return;
+  try {
+    for (const p of _adminInventory) {
+      const max = p.maxStock || CONFIG.maxStock || 24;
+      await updateProduct(p.id, { stock: max, maxStock: max });
+    }
+    adminToast('⚡ All items restocked!');
+  } catch (e) {
+    adminToast('⚠️ Restock failed.');
+  }
 }
 
 async function saveProductEdits(id) {
@@ -238,21 +259,21 @@ async function saveProductEdits(id) {
   if (!btn) return;
   btn.textContent = 'Saving…';
 
+  const max = parseInt(document.getElementById('editMax_' + id).value) || 24;
   const updates = {
     name:  document.getElementById('editName_' + id).value.trim(),
-    image: document.getElementById('editImage_' + id).value.trim(),
     price: parseFloat(document.getElementById('editPrice_' + id).value) || 0,
-    stock: Math.max(0, Math.min(CONFIG.maxStock, parseInt(document.getElementById('editStock_' + id).value) || 0)),
+    stock: Math.max(0, Math.min(max, parseInt(document.getElementById('editStock_' + id).value) || 0)),
+    maxStock: max
   };
 
   try {
     await updateProduct(id, updates);
-    adminToast('✓ Product updated successfully');
+    adminToast('✓ Product updated');
     btn.textContent = 'Save';
   } catch (err) {
-    adminToast('⚠️ Save failed. Check connection.');
+    adminToast('⚠️ Save failed');
     btn.textContent = 'Save';
-    console.error(err);
   }
 }
 

@@ -223,41 +223,84 @@ function populateInvoice(o) {
   }
 }
 
-function handleProofUpload(event) {
+function resizeImage(file, maxWidth, maxHeight) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        // Compress to JPEG 0.7 quality
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleProofUpload(event) {
   const file = event.target.files[0];
   if (!file || !orderState.order) return;
 
-  const reader = new FileReader();
-  reader.onload = async (e) => {
-    const base64Str = e.target.result;
-    try {
-      await fetch('/api/upload-proof', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          orderId: orderState.order.id,
-          base64Str: base64Str,
-          order: orderState.order
-        })
-      });
-      document.getElementById('btnProofUpload').style.display = 'none';
-      document.getElementById('proofStatus').style.display = 'block';
+  try {
+    const statusEl = document.getElementById('proofStatus');
+    const btnEl = document.getElementById('btnProofUpload');
+    
+    btnEl.disabled = true;
+    btnEl.textContent = 'Compressing & Sending…';
 
-      if (typeof sendAdminProofEmail === 'function') {
-        sendAdminProofEmail(orderState.order);
-      }
+    // Compress to max 1200px
+    const base64Str = await resizeImage(file, 1200, 1200);
 
-      const waMsg = `Hello! I have just uploaded my proof of payment for Order ID: ${orderState.order.id} (${CONFIG.currency}${orderState.order.total}). Please verify!`;
-      const waLink = generateWhatsAppLink(CONFIG.adminWhatsapp, waMsg);
-      // Slight delay to ensure the UI updates before the popup blocker might intercept
-      setTimeout(() => { window.open(waLink, '_blank'); }, 300);
+    await fetch('/api/upload-proof', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: orderState.order.id,
+        base64Str: base64Str,
+        order: orderState.order
+      })
+    });
 
-    } catch (err) {
-      console.error('Failed to upload proof:', err);
-      alert('Failed to attach proof. Please try again.');
+    btnEl.style.display = 'none';
+    statusEl.innerHTML = '✓ Proof compressed and sent to admin!';
+    statusEl.style.display = 'block';
+
+    if (typeof sendAdminProofEmail === 'function') {
+      sendAdminProofEmail(orderState.order);
     }
-  };
-  reader.readAsDataURL(file);
+
+    const waMsg = `Hello! I have just uploaded my proof of payment for Order ID: ${orderState.order.id} (${CONFIG.currency}${orderState.order.total}). Please verify!`;
+    const waLink = generateWhatsAppLink(CONFIG.adminWhatsapp, waMsg);
+    setTimeout(() => { window.open(waLink, '_blank'); }, 300);
+
+  } catch (err) {
+    console.error('Failed to upload proof:', err);
+    alert('Failed to attach proof. Please try again.');
+    const btnEl = document.getElementById('btnProofUpload');
+    btnEl.disabled = false;
+    btnEl.textContent = '📎 Attach Proof of Payment';
+  }
 }
 
 // ── PAYMENT INFO INIT ─────────────────────────────────────────────────────────

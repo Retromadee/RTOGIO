@@ -133,87 +133,47 @@
 
       <!-- ── INVENTORY EDITOR ── -->
       <div class="admin-section">
-        <div class="admin-section-title">Inventory</div>
+        <div class="admin-section-title">Inventory & Stock</div>
         <div class="admin-section-sub">
-          Single product — max <strong id="maxStockLabel">24</strong> glasses.
-          Edit name, style, price, and stock below.
+          Manage your current stock levels and total capacity. 
         </div>
 
         <div class="inv-editor">
-          <div class="inv-editor-header">
-            <span>Name</span>
+          <div class="inv-editor-header" style="grid-template-columns: 1.5fr 1fr 1fr 140px auto;">
+            <span>Product Name</span>
             <span>Price (£)</span>
-            <span>Stock (max 24)</span>
+            <span>Current Stock</span>
+            <span>Total Capacity</span>
             <span></span>
           </div>
-          <div class="inv-editor-row">
-            <div class="inv-editor-cell">
-              <input type="text" id="editName" placeholder="Product name">
-            </div>
-            <div class="inv-editor-cell">
-              <input type="number" id="editPrice" placeholder="25" min="0" step="1">
-            </div>
-            <div class="inv-editor-cell">
-              <input type="number" id="editStock" placeholder="24" min="0" max="24" step="1" oninput="onStockInput()">
-              <div class="stock-bar-admin">
-                <div class="stock-bar-admin-fill" id="stockBarFill" style="width:100%"></div>
-              </div>
-              <div style="font-size:.58rem;color:var(--gray);margin-top:.2rem;letter-spacing:.1em;" id="stockLabel">24 /
-                24</div>
-            </div>
-            <div class="inv-editor-cell">
-              <button class="save-inv-btn" id="saveInvBtn" onclick="saveProductEdits()">Save Changes</button>
-            </div>
+          <div class="inv-editor-row" id="adminInvRow" style="grid-template-columns: 1.5fr 1fr 1fr 140px auto;">
+            <!-- Rendered via JS -->
           </div>
         </div>
 
-        <div style="margin-top:1rem;font-size:.65rem;color:var(--gray);letter-spacing:.1em;line-height:1.8;">
-          ℹ️ Stock will also decrease automatically when customers place orders.<br>
-          Set stock back to 24 (or any value) here when you restock.
+        <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+           <button class="action-btn" onclick="restockAllToMax()" style="background:var(--green); border-color:var(--green); color:white;">⚡ Restock All to Max</button>
+           <button class="action-btn" onclick="initAdmin()">↻ Refresh Data</button>
         </div>
       </div>
 
-      <!-- ── NOTIFICATION GUIDE ── -->
+      <!-- ── ADMIN USER MANUAL ── -->
       <div class="admin-section">
-        <div class="admin-section-title">Notifications Guide</div>
-        <div class="admin-section-sub">How to notify customers</div>
+        <div class="admin-section-title">Admin User Manual</div>
+        <div class="admin-section-sub">Simple steps to manage your store</div>
 
-        <div style="border:1px solid var(--line);padding:1.5rem;font-size:.72rem;line-height:2;letter-spacing:.06em;">
-          <strong>WhatsApp</strong> — Click the <span style="color:#1da851;font-weight:700;">WhatsApp</span> button next
-          to any order. It opens a pre-filled WhatsApp message addressed to the customer. Just send it.<br><br>
-          <strong>Email</strong> — Click the <span style="font-weight:700;">Email</span> button to send an automatic
-          status-update email via EmailJS. Requires EmailJS to be configured in <code>js/config.js</code>.<br><br>
-          <strong>Advance Status</strong> — Click <span style="font-weight:700;">Advance →</span> to move the order to
-          the next stage. The customer's tracking page updates <em>instantly</em> via Firebase. Combine with
-          WhatsApp/Email to notify them.
-        </div>
-      </div>
+        <div style="border:1px solid var(--line); padding:1.5rem; font-size:.78rem; line-height:1.8; letter-spacing:.04em; background: rgba(255,255,255,0.02);">
+          <h4 style="margin-top:0; color:var(--white); text-transform:uppercase; font-size:.7rem; letter-spacing:.15em;">1. Handling New Orders</h4>
+          <p>When a new order arrives, it appears at the top of the <strong>Orders</strong> list. Check the "Payment" column to see if it was Cash, Bank, or Crypto. If a proof was attached, click <strong>📎 View Proof</strong> to see the screenshot.</p>
 
-      <!-- ── FIREBASE SECURITY RULES ── -->
-      <div class="admin-section">
-        <div class="admin-section-title">Security & "Leaked" Keys</div>
-        <div class="admin-section-sub">Why your Firebase keys in config.js are safe to be public</div>
-        
-        <div style="border:1px solid var(--line);padding:1.5rem;font-size:.72rem;line-height:2;letter-spacing:.06em;">
-          It is completely normal and <strong>safe</strong> for Firebase web API keys to be visible in Chrome DevTools. They simply identify your Firebase project. To actually secure your data, you MUST apply rules in your Firebase Console (Realtime Database -> Rules tab):<br><br>
-<pre style="background:var(--line);padding:1rem;overflow-x:auto;">
-{
-  "rules": {
-    "inventory": {
-      ".read": true,
-      ".write": false
-    },
-    "orders": {
-      // Anyone can create an order or read if they know the exact ID
-      "$orderId": {
-        ".read": true,
-        ".write": "!data.exists() || data.child('proofOfPayment').exists()"
-      }
-    }
-  }
-}
-</pre>
-        📝 Note: These are basic rules that solve the immediate "public key" worry. For a perfect production app, you should eventually implement Firebase Authentication to truly lock down the admin access points.
+          <h4 style="color:var(--white); text-transform:uppercase; font-size:.7rem; letter-spacing:.15em; margin-top:1.5rem;">2. Updating Status (Advance →)</h4>
+          <p>Click the <strong>Advance →</strong> button to move an order forward (e.g., from <em>Received</em> to <em>Processing</em>). This updates the customer's tracking page <strong>instantly</strong>. An update email is also sent to them automatically.</p>
+
+          <h4 style="color:var(--white); text-transform:uppercase; font-size:.7rem; letter-spacing:.15em; margin-top:1.5rem;">3. Messaging Customers</h4>
+          <p>Use the <strong>WhatsApp</strong> button to quickly open a chat with the customer. Use the <strong>Email</strong> button if you want to re-send the current status details to their inbox.</p>
+
+          <h4 style="color:var(--white); text-transform:uppercase; font-size:.7rem; letter-spacing:.15em; margin-top:1.5rem;">4. Restocking Inventory</h4>
+          <p>When you have new glasses available, use the <strong>Inventory</strong> section. You can manually change the number of items left, or click <strong>⚡ Restock All to Max</strong> to quickly reset your stock to its full capacity.</p>
         </div>
       </div>
 

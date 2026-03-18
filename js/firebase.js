@@ -107,11 +107,29 @@ async function saveOrder(order) {
 
 let _orderTimer = null;
 function listenToOrder(orderId, callback) {
-  return {}; 
+  if (_orderTimer) clearInterval(_orderTimer);
+  const poll = async () => {
+    try {
+      // We use a specific fetch for this order to speed it up and handle rules
+      const res = await fetch(`/api/orders?id=${encodeURIComponent(orderId)}`, { cache: 'no-store' });
+      if (res.ok) {
+        const order = await res.json();
+        callback(order);
+      } else if (res.status === 404) {
+        callback(null);
+      }
+    } catch(e) {
+      console.error('[FRAMES] Track poll error:', e);
+    }
+  };
+  poll();
+  _orderTimer = setInterval(poll, 3000); // 3s for tracking is good
+  return _orderTimer;
 }
 
 function detachOrderListener() {
-  clearInterval(_orderTimer);
+  if (_orderTimer) clearInterval(_orderTimer);
+  _orderTimer = null;
 }
 
 async function updateOrderStatus(orderId, statusIdx, statusKey) {
