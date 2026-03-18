@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rto.GiO — Eyewear</title>
+  <meta name="description" content="rto.GiO — Signature eyewear. Limited to 24 pairs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* rto.GiO brand — preserve mixed case */
+    .brand {
+      font-family: 'Courier Prime', monospace;
+      font-weight: 700;
+      font-size: 1.45rem;
+      letter-spacing: .04em;
+      text-transform: none;
+      cursor: pointer;
+      user-select: none;
+      text-decoration: none;
+      color: var(--black);
+    }
+
+    .brand .gio {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.65rem;
+      letter-spacing: .08em;
+      vertical-align: -2px;
+    }
+
+    /* Hero 2-col layout with product image */
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .hero-image {
+      position: relative;
+    }
+
+    .hero-image img {
+      width: 100%;
+      max-width: 520px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-image-label {
+      position: absolute;
+      bottom: .8rem;
+      left: .8rem;
+      font-size: .55rem;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      color: var(--gray);
+      background: var(--white);
+      padding: .2rem .6rem;
+    }
+
+    @media(max-width:700px) {
+      .hero-inner {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .hero-image {
+        order: -1;
+      }
+
+      .hero-image img {
+        max-width: 100%;
+      }
+    }
+
+    /* Product card image */
+    .inv-card-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      margin-bottom: .8rem;
+      display: block;
+    }
+  </style>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <a class="brand" href="index.html"><span>rto.</span><span class="gio">GiO</span></a>
+    <nav>
+      <a href="#shop" onclick="closeOrder();closeTrack()">Shop</a>
+      <a href="#track" onclick="showTrack()">Track Order</a>
+      <a href="admin.html">Admin</a>
+    </nav>
+  </header>
+
+  <!-- NOTIFICATION BANNER -->
+  <div class="notif" id="notifBar">
+    <span class="notif-text" id="notifText"></span>
+    <button class="notif-x" onclick="hideNotif()">✕</button>
+  </div>
+
+  <!-- ═══════════════════════════════ MAIN HOME ═══════════════════════════════ -->
+  <main id="homeView">
+
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="hero-eyebrow">Limited Edition · 24 Pairs Only</div>
+          <div class="hero-title"><span
+              style="text-transform:none;font-size:clamp(3.5rem,10vw,8rem);">rto.</span><br><span
+              style="color:var(--gray);">GiO</span></div>
+          <div class="hero-meta">
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="heroTotalStock">—</div>
+              <div class="hero-stat-label">Pairs in Stock</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="heroModels">24</div>
+              <div class="hero-stat-label">Max. Edition</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-num" id="heroAvail">—</div>
+              <div class="hero-stat-label">Available Now</div>
+            </div>
+          </div>
+          <button class="hero-cta" onclick="openOrder()">
+            <span>→</span> Order Now
+          </button>
+        </div>
+        <div class="hero-image">
+          <img src="images/product.jpg" alt="rto.GiO RTRO.01 Sport Wrap glasses">
+          <!-- <div class="hero-image-label">RTRO.01 · Sport Wrap · Mirror Lens</div> -->
+        </div>
+      </div>
+    </section>
+
+    <section class="inv-section">
+      <div class="section-label">
+        <span>Current Collection</span>
+        <span id="invTimestamp">Live inventory</span>
+      </div>
+      <div class="inv-grid" id="invGrid">
+        <div class="loading-row">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACK TEASER -->
+    <section class="track-section">
+      <div class="section-label">Order Status</div>
+      <div class="step-sub">Have an order? Track your delivery status below.</div>
+      <button class="hero-cta" onclick="showTrack()" style="margin-top:1.5rem;">
+        <span>→</span> Track My Order
+      </button>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════ ORDER OVERLAY ═══════════════════════════════ -->
+  <div class="overlay" id="orderOverlay">
+    <div class="overlay-inner">
+      <div class="overlay-top">
+        <div class="overlay-title">New Order</div>
+        <button class="x-btn" onclick="closeOrder()">✕</button>
+      </div>
+
+      <!-- STEPS BAR -->
+      <div class="steps-bar">
+        <div class="s-step" id="sb1">01 — Select</div>
+        <div class="s-step" id="sb2">02 — Details</div>
+        <div class="s-step" id="sb3">03 — Payment</div>
+        <div class="s-step" id="sb4">04 — Invoice</div>
+      </div>
+
+      <!-- STEP 1: PRODUCT -->
+      <div id="step1">
+        <div class="step-title">Choose Your Frame</div>
+        <div class="step-sub">Select a model and quantity</div>
+        <div class="prod-grid" id="prodGrid">
+          <div class="loading-row">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="qty-wrap">
+          <div class="qty-label">Quantity</div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <div class="qty-num" id="qtyNum">1</div>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="summary-box" id="step1Summary" style="display:none;">
+          <div class="sum-row"><span class="sum-label">Model</span><span id="s1Model">—</span></div>
+          <div class="sum-row"><span class="sum-label">Qty</span><span id="s1Qty">—</span></div>
+          <div class="sum-total"><span>Subtotal</span><span id="s1Total">—</span></div>
+        </div>
+        <button class="btn-primary" id="step1Next" onclick="goStep(2)" disabled>Continue →</button>
+      </div>
+
+      <!-- STEP 2: DETAILS -->
+      <div id="step2" class="hidden">
+        <div class="step-title">Your Details</div>
+        <div class="step-sub">Fill in your information for the order</div>
+        <div class="form-row">
+          <label class="f-label">Full Name</label>
+          <input class="f-input" id="fName" type="text" placeholder="Your name" oninput="validateForm()">
+          <div class="err-msg hidden" id="errName">Required</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Phone / WhatsApp</label>
+          <input class="f-input" id="fPhone" type="tel" placeholder="+90 5__ ___ __ __" oninput="validateForm()">
+          <div class="err-msg hidden" id="errPhone">Required</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Email</label>
+          <input class="f-input" id="fEmail" type="email" placeholder="you@email.com" oninput="validateForm()">
+          <div class="err-msg hidden" id="errEmail">Enter a valid email</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Delivery Location</label>
+          <input class="f-input" id="fLocation" type="text" placeholder="City" oninput="validateForm()">
+          <div class="err-msg hidden" id="errLoc">Required</div>
+        </div>
+        <button class="btn-primary" id="step2Next" onclick="goStep(3)" disabled>Continue →</button>
+        <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+      </div>
+
+      <!-- STEP 3: PAYMENT -->
+      <div id="step3" class="hidden">
+        <div class="step-title">Payment Method</div>
+        <div class="step-sub">Choose how you'd like to pay</div>
+
+        <!-- ORDER REVIEW -->
+        <div class="summary-box" style="margin-bottom:1.8rem;">
+          <div class="sum-row"><span class="sum-label">Order</span><span id="s3Model">—</span></div>
+          <div class="sum-row"><span class="sum-label">Customer</span><span id="s3Name">—</span></div>
+          <div class="sum-row"><span class="sum-label">Location</span><span id="s3Loc">—</span></div>
+          <div class="sum-total"><span>Total Due</span><span id="s3Total">—</span></div>
+        </div>
+
+        <!-- PAYMENT TABS -->
+        <div class="pay-tabs">
+          <button class="pay-tab active" id="tabCash" onclick="setPayment('cash')">Cash</button>
+          <button class="pay-tab" id="tabBank" onclick="setPayment('bank')">Bank Transfer</button>
+          <button class="pay-tab" id="tabCrypto" onclick="setPayment('crypto')">USDT Crypto</button>
+        </div>
+
+        <!-- CASH -->
+        <div class="pay-box show" id="boxCash">
+          <div class="cash-note">
+            <div class="pay-box-label">Cash on Delivery</div>
+            <div class="pay-note">Payment is collected when your order arrives. Please have the exact amount ready.
+            </div>
+          </div>
+        </div>
+
+        <!-- BANK TRANSFER -->
+        <div class="pay-box" id="boxBank">
+          <div class="pay-box-label">Account Holder</div>
+          <div class="pay-box-val" id="ibanName">—</div>
+          <div class="div" style="margin:1rem 0;"></div>
+          <div class="pay-box-label">IBAN (TRY)</div>
+          <div class="pay-box-val" id="ibanNum">—</div>
+          <button class="copy-btn" onclick="copyText('ibanNum','Copy IBAN','✓ Copied')">Copy IBAN</button>
+          <div class="pay-note">Send the exact amount and include your order ID in the description. <strong>Send your
+              transfer receipt/screenshot to our WhatsApp number after payment.</strong></div>
+        </div>
+
+        <!-- CRYPTO -->
+        <div class="pay-box" id="boxCrypto">
+          <div class="pay-box-label">USDT Wallet Address (Polygon)</div>
+          <div class="pay-box-val" id="cryptoAddr">—</div>
+          <button class="copy-btn" onclick="copyText('cryptoAddr','Copy Address','✓ Copied')">Copy Address</button>
+          <div class="div" style="margin:1rem 0;"></div>
+          <div class="pay-box-label">Network</div>
+          <div class="pay-box-val" style="font-size:.8rem;">Polygon</div>
+          <div class="pay-note">⚠ Only send USDT on the Polygon network. Sending on a different network will result in
+            permanent loss. <strong>Send your transfer screenshot to our WhatsApp number after payment.</strong></div>
+        </div>
+
+        <button class="btn-primary" onclick="placeOrder()">Place Order & Generate Invoice →</button>
+        <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+      </div>
+
+      <!-- STEP 4: INVOICE -->
+      <div id="step4" class="hidden">
+        <div class="invoice-wrap">
+          <div class="success-mark">✓</div>
+          <div class="step-title">Order Placed</div>
+          <div class="step-sub">Your invoice is ready. Save or print it for your records.</div>
+
+          <!-- INVOICE DOCUMENT -->
+          <div class="inv-doc" id="invoiceDoc">
+            <div class="inv-doc-header">
+              <div>
+                <div class="inv-brand-big">rto.GiO</div>
+                <div class="inv-brand-sub">Sport Eyewear — Limited to 24 Pairs</div>
+              </div>
+              <div class="inv-meta">
+                <div>Invoice No. <strong id="invNo">—</strong></div>
+                <div>Date: <strong id="invDate">—</strong></div>
+                <div>Status: <strong id="invStatus">—</strong></div>
+              </div>
+            </div>
+
+            <div class="inv-sec">
+              <div class="inv-sec-head">Bill To</div>
+              <div class="inv-line"><span>Name</span><span id="invName">—</span></div>
+              <div class="inv-line"><span>Phone</span><span id="invPhone">—</span></div>
+              <div class="inv-line"><span>Email</span><span id="invEmail">—</span></div>
+              <div class="inv-line"><span>Location</span><span id="invLoc">—</span></div>
+            </div>
+
+            <div class="inv-sec">
+              <div class="inv-sec-head">Order Details</div>
+              <div class="inv-line"><span>Model</span><span id="invModel">—</span></div>
+              <div class="inv-line"><span>Quantity</span><span id="invQty">—</span></div>
+              <div class="inv-line"><span>Unit Price</span><span id="invUnitPrice">—</span></div>
+            </div>
+
+            <div class="inv-sec">
+              <div class="inv-sec-head">Payment</div>
+              <div class="inv-line"><span>Method</span><span id="invPayMethod">—</span></div>
+              <div class="inv-line"><span>Subtotal</span><span id="invSubtotal">—</span></div>
+              <div class="inv-total-row">
+                <span>Total</span>
+                <span id="invTotal">—</span>
+              </div>
+              <div>
+                <span class="inv-stamp" id="invStampText">Pending</span>
+              </div>
+            </div>
+
+            <div class="inv-footer">
+              rto.GiO Eyewear · For questions contact us via phone or WhatsApp<br>
+              <a href="#" class="wa-link" id="invWaLink" target="_blank" style="display:none;margin-top:.6rem;">
+                💬 Contact us on WhatsApp
+              </a><br>
+              Thank you for your order.
+            </div>
+          </div>
+
+          <button class="btn-ghost" onclick="window.print()">⎙ Print / Save Invoice</button>
+
+          <!-- PROOF OF PAYMENT UPLOAD -->
+          <div id="proofSection" style="display:none; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid var(--line);">
+            <div style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">Payment Verification</div>
+            <div style="font-size:.85rem; margin-bottom:1rem; line-height:1.5;">Please upload your transfer screenshot below based on the generated invoice above to speed up verification.</div>
+            <input type="file" id="proofFile" accept="image/*" style="display:none;" onchange="handleProofUpload(event)">
+            <button class="btn-primary" id="btnProofUpload" onclick="document.getElementById('proofFile').click()">📎 Attach Proof of Payment</button>
+            <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof attached and sent to admin!</div>
+          </div>
+
+          <button class="btn-ghost mt1" onclick="showTrackFromOrder()">→ Track This Order</button>
+          <button class="btn-ghost mt1" onclick="closeOrder()">← Back to Collection</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ TRACK OVERLAY ═══════════════════════════════ -->
+  <div class="overlay" id="trackOverlay">
+    <div class="overlay-inner">
+      <div class="overlay-top">
+        <div class="overlay-title">Track Order</div>
+        <button class="x-btn" onclick="closeTrack()">✕</button>
+      </div>
+
+      <div class="track-view">
+
+        <!-- ORDER ID SEARCH -->
+        <div class="form-row">
+          <label class="f-label">Order ID</label>
+          <input class="f-input" id="trackIdInput" type="text" placeholder="FR-XXXXXX-XXXXXXXX"
+            oninput="this.value = this.value.toUpperCase()" onkeydown="trackKeydown(event)">
+        </div>
+
+        <div class="form-row" style="margin-top: -0.5rem;">
+          <label class="f-label">Verification (Phone or Email)</label>
+          <div class="track-id-row">
+            <div class="track-input-wrap">
+              <input class="f-input" id="trackVerifyInput" type="text" placeholder="Enter phone or email"
+                onkeydown="trackKeydown(event)">
+            </div>
+            <button class="track-search-btn" onclick="lookupOrder()">Track →</button>
+          </div>
+        </div>
+
+        <!-- LOADING -->
+        <div id="trackLoading" class="loading-row hidden">
+          <div class="spinner"></div>&nbsp; Looking up your order…
+        </div>
+
+        <!-- ERROR -->
+        <div id="trackError" class="track-error hidden"></div>
+
+        <!-- EMPTY (no ID entered) -->
+        <div id="trackEmpty">
+          <div class="empty-state">
+            <p>Enter your order ID above to track your delivery.<br>
+              You can find it on your invoice.</p>
+          </div>
+          <button class="btn-primary" onclick="closeTrack();openOrder();">Place an Order →</button>
+        </div>
+
+        <!-- TRACK CONTENT -->
+        <div id="trackContent" class="hidden">
+          <div class="track-label">Order Reference</div>
+          <div class="track-id-display" id="trackIdDisplay">—</div>
+          <div class="div"></div>
+          <div class="track-label" style="margin-bottom:.5rem;">Customer</div>
+          <div style="font-size:.85rem;margin-bottom:1.5rem;" id="trackCustomer">—</div>
+          <div class="track-label" style="margin-bottom:.5rem;">Item</div>
+          <div style="font-size:.85rem;margin-bottom:1.5rem;" id="trackItem">—</div>
+
+          <div class="track-steps" id="trackSteps"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
+
+  <!-- App modules (order matters) -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/inventory.js"></script>
+  <script src="js/order.js"></script>
+  <script src="js/track.js"></script>
+
+  <script>
+    // ── BOOT ────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      initEmailJS();
+      initInventory();
+      setPaymentInfo();
+
+      // Seed the payment info fields
+      document.getElementById('invTimestamp').textContent =
+        'Updated ' + new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    });
+  </script>
+
+</body>
+
+</html>

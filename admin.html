@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rto.GiO — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .brand-pin {
+      font-family: 'Courier Prime', monospace;
+      font-weight: 700;
+      font-size: 2.8rem;
+      color: var(--white);
+      letter-spacing: .08em;
+      text-transform: none;
+    }
+
+    .brand-pin .gio {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.2rem;
+      letter-spacing: .1em;
+    }
+  </style>
+</head>
+
+<body class="admin-body">
+
+  <!-- ═══════════════════════════════ PIN SCREEN ═══════════════════════════════ -->
+  <div id="pinScreen" class="pin-screen">
+    <a href="index.html" style="text-decoration:none;display:block;"><div class="brand-pin"><span>rto.</span><span class="gio">GiO</span></div></a>
+    <div style="text-align:center;">
+      <div class="pin-label">Admin Access</div>
+      <input class="pin-input" id="pinInput" type="password" maxlength="8" placeholder="····"
+        onkeydown="pinKeydown(event)" autofocus>
+    </div>
+    <button class="pin-btn" onclick="checkPin()">Enter →</button>
+    <div class="pin-error" id="pinError"></div>
+    <a href="index.html"
+      style="color:#444;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;margin-top:1rem;">←
+      Back to Store</a>
+  </div>
+
+  <!-- ═══════════════════════════════ ADMIN MAIN ═══════════════════════════════ -->
+  <div id="adminMain" class="hidden">
+
+    <!-- HEADER -->
+    <div class="admin-header">
+      <div class="admin-title">
+        <a href="index.html" style="text-decoration:none;color:inherit;"><span
+          style="font-family:'Courier Prime',monospace;font-weight:700;font-size:1.4rem;text-transform:none;letter-spacing:.04em;">rto.<span
+            style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.08em;">GiO</span></span></a>
+        <span>Admin Dashboard</span>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <a href="index.html"
+          style="font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gray);text-decoration:none;">←
+          Store</a>
+        <button class="admin-logout" onclick="logout()">Log Out</button>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="admin-content">
+
+      <!-- ── STATS ── -->
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="statTotal">—</div>
+          <div class="admin-stat-label">Total Orders</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="statPending">—</div>
+          <div class="admin-stat-label">Active Orders</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="statDelivered">—</div>
+          <div class="admin-stat-label">Delivered</div>
+        </div>
+        <div class="admin-stat">
+          <div class="admin-stat-num" id="statRevenue">—</div>
+          <div class="admin-stat-label">Total Revenue</div>
+        </div>
+      </div>
+
+      <!-- ── ORDERS ── -->
+      <div class="admin-section">
+        <div class="admin-section-title">Orders</div>
+        <div class="admin-section-sub">Live — updates automatically from Firebase</div>
+
+        <!-- Filter row -->
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;">
+          <button class="action-btn" onclick="filterOrdersByStatus(null)">All</button>
+          <button class="action-btn" onclick="filterOrdersByStatus('placed')">Received</button>
+          <button class="action-btn" onclick="filterOrdersByStatus('processing')">Processing</button>
+          <button class="action-btn" onclick="filterOrdersByStatus('ready')">Ready</button>
+          <button class="action-btn" onclick="filterOrdersByStatus('ontheway')">On the Way</button>
+          <button class="action-btn" onclick="filterOrdersByStatus('delivered')">Delivered</button>
+        </div>
+
+        <!-- Empty state -->
+        <div id="ordersEmpty" class="orders-empty hidden">
+          No orders yet. Orders from customers will appear here in real-time.
+        </div>
+
+        <!-- Table -->
+        <div id="ordersTableWrap" class="orders-table-wrap hidden">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Item</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
+
+        <!-- Loading state -->
+        <div id="ordersLoading" class="loading-row">
+          <div class="spinner"></div>&nbsp; Loading orders…
+        </div>
+      </div>
+
+      <!-- ── INVENTORY EDITOR ── -->
+      <div class="admin-section">
+        <div class="admin-section-title">Inventory</div>
+        <div class="admin-section-sub">
+          Single product — max <strong id="maxStockLabel">24</strong> glasses.
+          Edit name, style, price, and stock below.
+        </div>
+
+        <div class="inv-editor">
+          <div class="inv-editor-header">
+            <span>Name</span>
+            <span>Price (£)</span>
+            <span>Stock (max 24)</span>
+            <span></span>
+          </div>
+          <div class="inv-editor-row">
+            <div class="inv-editor-cell">
+              <input type="text" id="editName" placeholder="Product name">
+            </div>
+            <div class="inv-editor-cell">
+              <input type="number" id="editPrice" placeholder="25" min="0" step="1">
+            </div>
+            <div class="inv-editor-cell">
+              <input type="number" id="editStock" placeholder="24" min="0" max="24" step="1" oninput="onStockInput()">
+              <div class="stock-bar-admin">
+                <div class="stock-bar-admin-fill" id="stockBarFill" style="width:100%"></div>
+              </div>
+              <div style="font-size:.58rem;color:var(--gray);margin-top:.2rem;letter-spacing:.1em;" id="stockLabel">24 /
+                24</div>
+            </div>
+            <div class="inv-editor-cell">
+              <button class="save-inv-btn" id="saveInvBtn" onclick="saveProductEdits()">Save Changes</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:1rem;font-size:.65rem;color:var(--gray);letter-spacing:.1em;line-height:1.8;">
+          ℹ️ Stock will also decrease automatically when customers place orders.<br>
+          Set stock back to 24 (or any value) here when you restock.
+        </div>
+      </div>
+
+      <!-- ── NOTIFICATION GUIDE ── -->
+      <div class="admin-section">
+        <div class="admin-section-title">Notifications Guide</div>
+        <div class="admin-section-sub">How to notify customers</div>
+
+        <div style="border:1px solid var(--line);padding:1.5rem;font-size:.72rem;line-height:2;letter-spacing:.06em;">
+          <strong>WhatsApp</strong> — Click the <span style="color:#1da851;font-weight:700;">WhatsApp</span> button next
+          to any order. It opens a pre-filled WhatsApp message addressed to the customer. Just send it.<br><br>
+          <strong>Email</strong> — Click the <span style="font-weight:700;">Email</span> button to send an automatic
+          status-update email via EmailJS. Requires EmailJS to be configured in <code>js/config.js</code>.<br><br>
+          <strong>Advance Status</strong> — Click <span style="font-weight:700;">Advance →</span> to move the order to
+          the next stage. The customer's tracking page updates <em>instantly</em> via Firebase. Combine with
+          WhatsApp/Email to notify them.
+        </div>
+      </div>
+
+      <!-- ── FIREBASE SECURITY RULES ── -->
+      <div class="admin-section">
+        <div class="admin-section-title">Security & "Leaked" Keys</div>
+        <div class="admin-section-sub">Why your Firebase keys in config.js are safe to be public</div>
+        
+        <div style="border:1px solid var(--line);padding:1.5rem;font-size:.72rem;line-height:2;letter-spacing:.06em;">
+          It is completely normal and <strong>safe</strong> for Firebase web API keys to be visible in Chrome DevTools. They simply identify your Firebase project. To actually secure your data, you MUST apply rules in your Firebase Console (Realtime Database -> Rules tab):<br><br>
+<pre style="background:var(--line);padding:1rem;overflow-x:auto;">
+{
+  "rules": {
+    "inventory": {
+      ".read": true,
+      ".write": false
+    },
+    "orders": {
+      // Anyone can create an order or read if they know the exact ID
+      "$orderId": {
+        ".read": true,
+        ".write": "!data.exists() || data.child('proofOfPayment').exists()"
+      }
+    }
+  }
+}
+</pre>
+        📝 Note: These are basic rules that solve the immediate "public key" worry. For a perfect production app, you should eventually implement Firebase Authentication to truly lock down the admin access points.
+        </div>
+      </div>
+
+    </div>
+    <!-- /admin-content -->
+
+  </div>
+  <!-- /adminMain -->
+
+  <!-- TOAST -->
+  <div class="admin-toast" id="adminToast"></div>
+
+  <!-- ═══════════════════════════════ SCRIPTS ═══════════════════════════════ -->
+  <!--
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/admin.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set max stock label
+      const ml = document.getElementById('maxStockLabel');
+      if (ml) ml.textContent = CONFIG.maxStock;
+
+      // Hide orders loading once first data arrives (handled by listenToAllOrders)
+      // Initially show loading
+      const loadEl = document.getElementById('ordersLoading');
+      setTimeout(() => { if (loadEl) loadEl.classList.add('hidden'); }, 5000);
+    });
+  </script>
+
+</body>
+
+</html>
