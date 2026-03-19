@@ -95,7 +95,9 @@
 
   <!-- HEADER -->
   <header>
-    <a class="brand" href="index.html"><span>rto.</span><span class="gio">GiO</span></a>
+    <a href="index.html" class="nav-brand">
+        <img src="images/logo.png" alt="rto.GiO Logo" style="height: 1.8rem; vertical-align: middle;">
+      </a>
     <nav>
       <a href="#track" onclick="showTrack()">Track Order</a>
       <a href="admin.html">Admin</a>
@@ -137,7 +139,7 @@
           </button>
         </div>
         <div class="hero-image">
-          <img src="images/product.jpg" alt="rto.GiO RTRO.01 Sport Wrap glasses">
+          <img src="images/product.png" alt="rto.GiO RTRO.01 Sport Wrap glasses">
           <!-- <div class="hero-image-label">RTRO.01 · Sport Wrap · Mirror Lens</div> -->
         </div>
       </div>
@@ -303,12 +305,19 @@
           <div class="step-sub" id="step4Sub">Your invoice is ready and has been sent to your email.</div>
 
           <!-- PROOF OF PAYMENT UPLOAD (MANDATORY FOR NON-CASH) -->
-          <div id="proofSection" style="display:none; margin: 1.5rem 0; padding: 1.5rem; border: 1px solid var(--line); background: rgba(0,0,0,0.02); text-align: center;">
-            <div style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">Payment Verification Required</div>
-            <div style="font-size:.85rem; margin-bottom:1.2rem; line-height:1.5;">Please upload your transfer screenshot to generate your final invoice.</div>
-            <input type="file" id="proofFile" accept="image/*" style="display:none;" onchange="handleProofUpload(event)">
-            <button class="btn-primary" id="btnProofUpload" onclick="document.getElementById('proofFile').click()">📎 Attach Proof of Payment</button>
-            <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof attached! Generating invoice...</div>
+          <div id="proofSection"
+            style="display:none; margin: 1.5rem 0; padding: 1.5rem; border: 1px solid var(--line); background: rgba(0,0,0,0.02); text-align: center;">
+            <div
+              style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">
+              Payment Verification Required</div>
+            <div style="font-size:.85rem; margin-bottom:1.2rem; line-height:1.5;">Please upload your transfer screenshot
+              to generate your final invoice.</div>
+            <input type="file" id="proofFile" accept="image/*" style="display:none;"
+              onchange="handleProofUpload(event)">
+            <button class="btn-primary" id="btnProofUpload" onclick="document.getElementById('proofFile').click()">📎
+              Attach Proof of Payment</button>
+            <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof
+              attached! Generating invoice...</div>
           </div>
 
           <!-- INVOICE DOCUMENT (HIDDEN UNTIL PROOF UPLOADED FOR NON-CASH) -->
@@ -316,7 +325,7 @@
             <div class="inv-doc" id="invoiceDoc">
               <div class="inv-doc-header">
                 <div>
-                  <div class="inv-brand-big">rto.GiO</div>
+                  <img src="images/logo.png" alt="rto.GiO" style="height: 1.8rem; margin-bottom: 0.4rem;">
                   <div class="inv-brand-sub">Sport Eyewear — Limited to 24 Pairs</div>
                 </div>
                 <div class="inv-meta">
@@ -364,7 +373,8 @@
             </div>
 
             <div id="invoiceActions">
-              <a id="invWaLink" href="#" target="_blank" class="btn-primary" style="display:none; width: 100%; margin-top: 1rem; background: #25D366; color: white; text-decoration: none; align-items: center; justify-content: center; height: 3rem; border: none; border-radius: 4px; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">
+              <a id="invWaLink" href="#" target="_blank" class="btn-primary"
+                style="display:none; width: 100%; margin-top: 1rem; background: #25D366; color: white; text-decoration: none; align-items: center; justify-content: center; height: 3rem; border: none; border-radius: 4px; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">
                 📱 Confirm on WhatsApp
               </a>
 
