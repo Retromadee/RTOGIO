@@ -235,7 +235,8 @@ function populateInvoice(o) {
     const link = generateWhatsAppLink(CONFIG.adminWhatsapp, msg);
     if (waEl) {
       waEl.href = link;
-      waEl.style.display = 'inline-flex';
+      // Show the large button ONLY for Cash on Delivery
+      waEl.style.display = (o.payment === 'Cash on Delivery') ? 'inline-flex' : 'none';
     }
     if (waFooter) {
       waFooter.href = link;
@@ -317,9 +318,7 @@ async function handleProofUpload(event) {
       sendAdminProofEmail(orderState.order);
     }
 
-    const waMsg = `Hello! I have just uploaded my proof of payment for Order ID: ${orderState.order.id} (${CONFIG.currency}${orderState.order.total}). Please verify!`;
-    const waLink = generateWhatsAppLink(CONFIG.adminWhatsapp, waMsg);
-    setTimeout(() => { window.open(waLink, '_blank'); }, 300);
+    // REMOVED: Automatic WhatsApp redirect after proof upload. Users don't need it for transfers.
 
   } catch (err) {
     console.error('Failed to upload proof:', err);
