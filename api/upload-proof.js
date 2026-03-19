@@ -1,5 +1,4 @@
 import { getDbInstance, ref, update } from './utils/db.js';
-import { sendEmailJS } from './orders.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
@@ -11,13 +10,8 @@ export default async function handler(req, res) {
     const db = getDbInstance();
     await update(ref(db, `orders/${orderId}`), { proofOfPayment: base64Str });
 
-    // Send admin notification
-    if (order) {
-      sendEmailJS(process.env.EMAILJS_ADMIN_TEMPLATE_ID, {
-        title: 'Proof Uploaded: ' + order.id,
-        message: `${order.name} uploaded proof of payment for ${order.payment} (${CONFIG.currency}${order.total})`
-      }).catch(console.error);
-    }
+    // Send admin notification (Optional: Can be added to orders.js later if needed)
+    console.log(`[Upload Proof] Proof uploaded for order ${orderId}`);
 
     return res.status(200).json({ success: true });
   } catch (err) {

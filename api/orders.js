@@ -2,7 +2,16 @@ import { Resend } from 'resend';
 import { getDbInstance, ref, get, set, update } from './utils/db.js';
 import { verifyAuth } from './utils/auth.js';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+try {
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } else {
+    console.warn('[Order API] RESEND_API_KEY is missing. Emails will be disabled.');
+  }
+} catch (e) {
+  console.error('[Order API] Failed to initialize Resend:', e.message);
+}
 
 async function sendOrderEmails(order) {
   const brandName = process.env.BRAND_NAME || 'rto.GiO';
@@ -12,6 +21,10 @@ async function sendOrderEmails(order) {
   const waUserLink = `https://wa.me/${order.phone.replace(/\D/g, '')}?text=${encodeURIComponent('Hi ' + order.name + '! This is ' + brandName + ' regarding your order ' + order.id)}`;
   
   // 1. Send to Customer
+  if (!resend) {
+    console.warn('[Resend] Customer email skipped (Resend not initialized)');
+    return;
+  }
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev', // Use default for unverified domains
@@ -38,6 +51,10 @@ async function sendOrderEmails(order) {
   }
 
   // 2. Send to Admin
+  if (!resend) {
+    console.warn('[Resend] Admin email skipped (Resend not initialized)');
+    return;
+  }
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
@@ -67,6 +84,10 @@ async function sendOrderEmails(order) {
 async function sendStatusEmail({ to_name, to_email, order_id, status_title, status_desc }) {
   const brandName = process.env.BRAND_NAME || 'rto.GiO';
   
+  if (!resend) {
+    console.warn('[Resend] Status email skipped (Resend not initialized)');
+    return;
+  }
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
