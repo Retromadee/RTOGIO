@@ -199,7 +199,7 @@ function populateInvoice(o) {
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   set('invNo',        o.id);
   set('invDate',      o.date);
-  set('invStatus',    'Pending Payment');
+  set('invStatus',    o.payment === 'Cash on Delivery' ? 'Confirmed' : 'Pending Payment');
   set('invName',      o.name);
   set('invPhone',     o.phone);
   set('invEmail',     o.email);
@@ -213,16 +213,34 @@ function populateInvoice(o) {
   set('invStampText', o.payment === 'Cash on Delivery' ? 'COD' : 'Awaiting Payment');
 
   const proofSec = document.getElementById('proofSection');
-  if (proofSec) {
-    proofSec.style.display = o.payment !== 'Cash on Delivery' ? 'block' : 'none';
+  const invCont  = document.getElementById('invoiceContainer');
+  const step4Sub = document.getElementById('step4Sub');
+
+  if (o.payment === 'Cash on Delivery') {
+    if (proofSec) proofSec.style.display = 'none';
+    if (invCont)  invCont.style.display = 'block';
+    if (step4Sub) step4Sub.textContent = 'Your invoice is ready and has been sent to your email.';
+  } else {
+    // Bank or Crypto
+    if (proofSec) proofSec.style.display = 'block';
+    if (invCont)  invCont.style.display = 'none';
+    if (step4Sub) step4Sub.textContent = 'Please upload proof of payment to generate your final invoice. A copy has been sent to your email.';
   }
 
   // WhatsApp contact link in invoice footer
   const waEl = document.getElementById('invWaLink');
-  if (waEl && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
+  const waFooter = document.getElementById('invWaLinkFooter');
+  if (CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
     const msg = buildOrderPlacedWhatsApp(o);
-    waEl.href = generateWhatsAppLink(CONFIG.adminWhatsapp, msg);
-    waEl.style.display = 'inline-flex';
+    const link = generateWhatsAppLink(CONFIG.adminWhatsapp, msg);
+    if (waEl) {
+      waEl.href = link;
+      waEl.style.display = 'inline-flex';
+    }
+    if (waFooter) {
+      waFooter.href = link;
+      waFooter.style.display = 'inline-flex';
+    }
   }
 }
 
@@ -286,8 +304,14 @@ async function handleProofUpload(event) {
     });
 
     btnEl.style.display = 'none';
-    statusEl.innerHTML = '✓ Proof compressed and sent to admin!';
+    statusEl.innerHTML = '✓ Proof attached! Your invoice is ready below.';
     statusEl.style.display = 'block';
+
+    // Reveal the invoice
+    const invCont = document.getElementById('invoiceContainer');
+    const step4Sub = document.getElementById('step4Sub');
+    if (invCont) invCont.style.display = 'block';
+    if (step4Sub) step4Sub.textContent = 'Your invoice is ready and has been sent to your email.';
 
     if (typeof sendAdminProofEmail === 'function') {
       sendAdminProofEmail(orderState.order);

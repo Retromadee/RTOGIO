@@ -173,7 +173,7 @@
         <div style="display:flex; align-items:center; gap:.5rem;">
           <button class="x-btn" id="btnS1Back" onclick="goStep(1)" style="display:none; font-size:1.2rem;">←</button>
           <button class="x-btn" id="btnS2Back" onclick="goStep(2)" style="display:none; font-size:1.2rem;">←</button>
-          <div class="overlay-title">New Order</div>
+          <div class="overlay-title">Order Status</div>
         </div>
         <button class="x-btn" onclick="closeOrder()">✕</button>
       </div>
@@ -183,193 +183,87 @@
         <div class="s-step" id="sb1">01 — Select</div>
         <div class="s-step" id="sb2">02 — Details</div>
         <div class="s-step" id="sb3">03 — Payment</div>
-        <div class="s-step" id="sb4">04 — Invoice</div>
+        <div class="s-step" id="sb4">04 — Confirmation</div>
       </div>
-
-      <!-- STEP 1: PRODUCT -->
-      <div id="step1">
-        <div class="step-title">Choose Your Frame</div>
-        <div class="step-sub">Select a model and quantity</div>
-        <div class="prod-grid" id="prodGrid">
-          <div class="loading-row">
-            <div class="spinner"></div>
-          </div>
-        </div>
-        <div class="qty-wrap">
-          <div class="qty-label">Quantity</div>
-          <div class="qty-ctrl">
-            <button class="qty-btn" onclick="changeQty(-1)">−</button>
-            <div class="qty-num" id="qtyNum">1</div>
-            <button class="qty-btn" onclick="changeQty(1)">+</button>
-          </div>
-        </div>
-        <div class="summary-box" id="step1Summary" style="display:none;">
-          <div class="sum-row"><span class="sum-label">Model</span><span id="s1Model">—</span></div>
-          <div class="sum-row"><span class="sum-label">Qty</span><span id="s1Qty">—</span></div>
-          <div class="sum-total"><span>Subtotal</span><span id="s1Total">—</span></div>
-        </div>
-        <button class="btn-primary" id="step1Next" onclick="goStep(2)" disabled>Continue →</button>
-      </div>
-
-      <!-- STEP 2: DETAILS -->
-      <div id="step2" class="hidden">
-        <div class="step-title">Your Details</div>
-        <div class="step-sub">Fill in your information for the order</div>
-        <div class="form-row">
-          <label class="f-label">Full Name</label>
-          <input class="f-input" id="fName" type="text" placeholder="Your name" oninput="validateForm()">
-          <div class="err-msg hidden" id="errName">Required</div>
-        </div>
-        <div class="form-row">
-          <label class="f-label">Phone / WhatsApp</label>
-          <input class="f-input" id="fPhone" type="tel" placeholder="+90 5__ ___ __ __" oninput="validateForm()">
-          <div class="err-msg hidden" id="errPhone">Required</div>
-        </div>
-        <div class="form-row">
-          <label class="f-label">Email</label>
-          <input class="f-input" id="fEmail" type="email" placeholder="you@email.com" oninput="validateForm()">
-          <div class="err-msg hidden" id="errEmail">Enter a valid email</div>
-        </div>
-        <div class="form-row">
-          <label class="f-label">Delivery Location</label>
-          <input class="f-input" id="fLocation" type="text" placeholder="City" oninput="validateForm()">
-          <div class="err-msg hidden" id="errLoc">Required</div>
-        </div>
-        <button class="btn-primary" id="step2Next" onclick="goStep(3)" disabled>Continue →</button>
-        <button class="btn-ghost" onclick="goStep(1)">← Back</button>
-      </div>
-
-      <!-- STEP 3: PAYMENT -->
-      <div id="step3" class="hidden">
-        <div class="step-title">Payment Method</div>
-        <div class="step-sub">Choose how you'd like to pay</div>
-
-        <!-- ORDER REVIEW -->
-        <div class="summary-box" style="margin-bottom:1.8rem;">
-          <div class="sum-row"><span class="sum-label">Order</span><span id="s3Model">—</span></div>
-          <div class="sum-row"><span class="sum-label">Customer</span><span id="s3Name">—</span></div>
-          <div class="sum-row"><span class="sum-label">Location</span><span id="s3Loc">—</span></div>
-          <div class="sum-total"><span>Total Due</span><span id="s3Total">—</span></div>
-        </div>
-
-        <!-- PAYMENT TABS -->
-        <div class="pay-tabs">
-          <button class="pay-tab active" id="tabCash" onclick="setPayment('cash')">Cash</button>
-          <button class="pay-tab" id="tabBank" onclick="setPayment('bank')">Bank Transfer</button>
-          <button class="pay-tab" id="tabCrypto" onclick="setPayment('crypto')">USDT Crypto</button>
-        </div>
-
-        <!-- CASH -->
-        <div class="pay-box show" id="boxCash">
-          <div class="cash-note">
-            <div class="pay-box-label">Cash on Delivery</div>
-            <div class="pay-note">Payment is collected when your order arrives. Please have the exact amount ready.
-            </div>
-          </div>
-        </div>
-
-        <!-- BANK TRANSFER -->
-        <div class="pay-box" id="boxBank">
-          <div class="pay-box-label">Account Holder</div>
-          <div class="pay-box-val" id="ibanName">—</div>
-          <div class="div" style="margin:1rem 0;"></div>
-          <div class="pay-box-label">IBAN (TRY)</div>
-          <div class="pay-box-val" id="ibanNum">—</div>
-          <button class="copy-btn" onclick="copyText('ibanNum','Copy IBAN','✓ Copied')">Copy IBAN</button>
-          <div class="pay-note">Send the exact amount and include your order ID in the description. <strong>Send your
-              transfer receipt/screenshot to our WhatsApp number after payment.</strong></div>
-        </div>
-
-        <!-- CRYPTO -->
-        <div class="pay-box" id="boxCrypto">
-          <div class="pay-box-label">USDT Wallet Address (Polygon)</div>
-          <div class="pay-box-val" id="cryptoAddr">—</div>
-          <button class="copy-btn" onclick="copyText('cryptoAddr','Copy Address','✓ Copied')">Copy Address</button>
-          <div class="div" style="margin:1rem 0;"></div>
-          <div class="pay-box-label">Network</div>
-          <div class="pay-box-val" style="font-size:.8rem;">Polygon</div>
-          <div class="pay-note">⚠ Only send USDT on the Polygon network. Sending on a different network will result in
-            permanent loss. <strong>Send your transfer screenshot to our WhatsApp number after payment.</strong></div>
-        </div>
-
-        <button class="btn-primary" onclick="placeOrder()">Place Order & Generate Invoice →</button>
-        <button class="btn-ghost" onclick="goStep(2)">← Back</button>
-      </div>
-
-      <!-- STEP 4: INVOICE -->
+...
+      <!-- STEP 4: INVOICE / CONFIRMATION -->
       <div id="step4" class="hidden">
         <div class="invoice-wrap">
           <div class="success-mark">✓</div>
-          <div class="step-title">Order Placed</div>
-          <div class="step-sub">Your invoice is ready. Save or print it for your records.</div>
+          <div class="step-title" id="step4Title">Order Placed</div>
+          <div class="step-sub" id="step4Sub">Your invoice is ready and has been sent to your email.</div>
 
-          <!-- INVOICE DOCUMENT -->
-          <div class="inv-doc" id="invoiceDoc">
-            <div class="inv-doc-header">
-              <div>
-                <div class="inv-brand-big">rto.GiO</div>
-                <div class="inv-brand-sub">Sport Eyewear — Limited to 24 Pairs</div>
-              </div>
-              <div class="inv-meta">
-                <div>Invoice No. <strong id="invNo">—</strong></div>
-                <div>Date: <strong id="invDate">—</strong></div>
-                <div>Status: <strong id="invStatus">—</strong></div>
-              </div>
-            </div>
-
-            <div class="inv-sec">
-              <div class="inv-sec-head">Bill To</div>
-              <div class="inv-line"><span>Name</span><span id="invName">—</span></div>
-              <div class="inv-line"><span>Phone</span><span id="invPhone">—</span></div>
-              <div class="inv-line"><span>Email</span><span id="invEmail">—</span></div>
-              <div class="inv-line"><span>Location</span><span id="invLoc">—</span></div>
-            </div>
-
-            <div class="inv-sec">
-              <div class="inv-sec-head">Order Details</div>
-              <div class="inv-line"><span>Model</span><span id="invModel">—</span></div>
-              <div class="inv-line"><span>Quantity</span><span id="invQty">—</span></div>
-              <div class="inv-line"><span>Unit Price</span><span id="invUnitPrice">—</span></div>
-            </div>
-
-            <div class="inv-sec">
-              <div class="inv-sec-head">Payment</div>
-              <div class="inv-line"><span>Method</span><span id="invPayMethod">—</span></div>
-              <div class="inv-line"><span>Subtotal</span><span id="invSubtotal">—</span></div>
-              <div class="inv-total-row">
-                <span>Total</span>
-                <span id="invTotal">—</span>
-              </div>
-              <div>
-                <span class="inv-stamp" id="invStampText">Pending</span>
-              </div>
-            </div>
-
-            <div class="inv-footer">
-              rto.GiO Eyewear · For questions contact us via phone or WhatsApp<br>
-              <a href="#" class="wa-link" id="invWaLink" target="_blank" style="display:none;margin-top:.6rem;">
-                💬 Contact us on WhatsApp
-              </a><br>
-              Thank you for your order.
-            </div>
-          </div>
-
-          <!-- PROOF OF PAYMENT UPLOAD -->
-          <div id="proofSection" style="display:none; margin-top:1.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--line);">
-            <div style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">Payment Verification</div>
-            <div style="font-size:.85rem; margin-bottom:1rem; line-height:1.5;">Please upload your transfer screenshot below based on the generated invoice above to speed up verification.</div>
+          <!-- PROOF OF PAYMENT UPLOAD (MANDATORY FOR NON-CASH) -->
+          <div id="proofSection" style="display:none; margin: 1.5rem 0; padding: 1.5rem; border: 1px solid var(--line); background: rgba(0,0,0,0.02); text-align: center;">
+            <div style="font-size:.7rem; letter-spacing:.12em; color:var(--gray); margin-bottom:.8rem; text-transform:uppercase;">Payment Verification Required</div>
+            <div style="font-size:.85rem; margin-bottom:1.2rem; line-height:1.5;">Please upload your transfer screenshot to generate your final invoice.</div>
             <input type="file" id="proofFile" accept="image/*" style="display:none;" onchange="handleProofUpload(event)">
             <button class="btn-primary" id="btnProofUpload" onclick="document.getElementById('proofFile').click()">📎 Attach Proof of Payment</button>
-            <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof attached and sent to admin!</div>
+            <div id="proofStatus" style="font-size:.8rem; margin-top:.8rem; color:var(--green); display:none;">✓ Proof attached! Generating invoice...</div>
           </div>
 
-          <a id="invWaLink" href="#" target="_blank" class="btn-primary" style="display:none; width: 100%; margin-top: 1rem; background: #25D366; color: white; text-decoration: none; align-items: center; justify-content: center; height: 3rem; border: none; border-radius: 4px; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">
-            📱 Confirm on WhatsApp
-          </a>
+          <!-- INVOICE DOCUMENT (HIDDEN UNTIL PROOF UPLOADED FOR NON-CASH) -->
+          <div id="invoiceContainer" style="display:block;">
+            <div class="inv-doc" id="invoiceDoc">
+              <div class="inv-doc-header">
+                <div>
+                  <div class="inv-brand-big">rto.GiO</div>
+                  <div class="inv-brand-sub">Sport Eyewear — Limited to 24 Pairs</div>
+                </div>
+                <div class="inv-meta">
+                  <div>Invoice No. <strong id="invNo">—</strong></div>
+                  <div>Date: <strong id="invDate">—</strong></div>
+                  <div>Status: <strong id="invStatus">—</strong></div>
+                </div>
+              </div>
 
-          <button class="btn-ghost" onclick="window.print()">⎙ Print / Save Invoice</button>
+              <div class="inv-sec">
+                <div class="inv-sec-head">Bill To</div>
+                <div class="inv-line"><span>Name</span><span id="invName">—</span></div>
+                <div class="inv-line"><span>Phone</span><span id="invPhone">—</span></div>
+                <div class="inv-line"><span>Email</span><span id="invEmail">—</span></div>
+                <div class="inv-line"><span>Location</span><span id="invLoc">—</span></div>
+              </div>
 
-          <button class="btn-ghost mt1" onclick="showTrackFromOrder()">→ Track This Order</button>
+              <div class="inv-sec">
+                <div class="inv-sec-head">Order Details</div>
+                <div class="inv-line"><span>Model</span><span id="invModel">—</span></div>
+                <div class="inv-line"><span>Quantity</span><span id="invQty">—</span></div>
+                <div class="inv-line"><span>Unit Price</span><span id="invUnitPrice">—</span></div>
+              </div>
+
+              <div class="inv-sec">
+                <div class="inv-sec-head">Payment</div>
+                <div class="inv-line"><span>Method</span><span id="invPayMethod">—</span></div>
+                <div class="inv-line"><span>Subtotal</span><span id="invSubtotal">—</span></div>
+                <div class="inv-total-row">
+                  <span>Total</span>
+                  <span id="invTotal">—</span>
+                </div>
+                <div>
+                  <span class="inv-stamp" id="invStampText">Pending</span>
+                </div>
+              </div>
+
+              <div class="inv-footer">
+                rto.GiO Eyewear · For questions contact us via phone or WhatsApp<br>
+                <a href="#" class="wa-link" id="invWaLinkFooter" target="_blank" style="display:none;margin-top:.6rem;">
+                  💬 Contact us on WhatsApp
+                </a><br>
+                Thank you for your order.
+              </div>
+            </div>
+
+            <div id="invoiceActions">
+              <a id="invWaLink" href="#" target="_blank" class="btn-primary" style="display:none; width: 100%; margin-top: 1rem; background: #25D366; color: white; text-decoration: none; align-items: center; justify-content: center; height: 3rem; border: none; border-radius: 4px; font-weight: bold; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.8rem;">
+                📱 Confirm on WhatsApp
+              </a>
+
+              <button class="btn-ghost" onclick="window.print()">⎙ Print / Save Invoice</button>
+              <button class="btn-ghost mt1" onclick="showTrackFromOrder()">→ Track This Order</button>
+            </div>
+          </div>
+
           <button class="btn-ghost mt1" onclick="closeOrder()">← Back to Collection</button>
         </div>
       </div>
