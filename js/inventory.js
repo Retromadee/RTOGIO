@@ -48,7 +48,7 @@ function renderInventoryGrid() {
     grid.innerHTML += `
       <div class="inv-card ${isOos ? 'oos' : ''}" ${!isOos ? `onclick="selectFromGrid('${item.id}')"` : ''}>
         ${tagHTML}
-        <img src="images/product.jpg" alt="${item.name}" class="inv-card-img">
+        <img src="images/product3.jpg" alt="${item.name}" class="inv-card-img">
         <div class="inv-name">${item.name}</div>
         <div class="inv-stock-bar">
           <div class="inv-stock-fill ${isLow ? 'low' : isOos ? 'out' : ''}" style="width:${pct}%"></div>
