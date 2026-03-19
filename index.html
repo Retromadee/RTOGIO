@@ -185,7 +185,116 @@
         <div class="s-step" id="sb3">03 — Payment</div>
         <div class="s-step" id="sb4">04 — Confirmation</div>
       </div>
-...
+
+      <!-- STEP 1: PRODUCT -->
+      <div id="step1">
+        <div class="step-title">Choose Your Frame</div>
+        <div class="step-sub">Select a model and quantity</div>
+        <div class="prod-grid" id="prodGrid">
+          <div class="loading-row">
+            <div class="spinner"></div>
+          </div>
+        </div>
+        <div class="qty-wrap">
+          <div class="qty-label">Quantity</div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="changeQty(-1)">−</button>
+            <div class="qty-num" id="qtyNum">1</div>
+            <button class="qty-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+        <div class="summary-box" id="step1Summary" style="display:none;">
+          <div class="sum-row"><span class="sum-label">Model</span><span id="s1Model">—</span></div>
+          <div class="sum-row"><span class="sum-label">Qty</span><span id="s1Qty">—</span></div>
+          <div class="sum-total"><span>Subtotal</span><span id="s1Total">—</span></div>
+        </div>
+        <button class="btn-primary" id="step1Next" onclick="goStep(2)" disabled>Continue →</button>
+      </div>
+
+      <!-- STEP 2: DETAILS -->
+      <div id="step2" class="hidden">
+        <div class="step-title">Your Details</div>
+        <div class="step-sub">Fill in your information for the order</div>
+        <div class="form-row">
+          <label class="f-label">Full Name</label>
+          <input class="f-input" id="fName" type="text" placeholder="Your name" oninput="validateForm()">
+          <div class="err-msg hidden" id="errName">Required</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Phone / WhatsApp</label>
+          <input class="f-input" id="fPhone" type="tel" placeholder="+90 5__ ___ __ __" oninput="validateForm()">
+          <div class="err-msg hidden" id="errPhone">Required</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Email</label>
+          <input class="f-input" id="fEmail" type="email" placeholder="you@email.com" oninput="validateForm()">
+          <div class="err-msg hidden" id="errEmail">Enter a valid email</div>
+        </div>
+        <div class="form-row">
+          <label class="f-label">Delivery Location</label>
+          <input class="f-input" id="fLocation" type="text" placeholder="City" oninput="validateForm()">
+          <div class="err-msg hidden" id="errLoc">Required</div>
+        </div>
+        <button class="btn-primary" id="step2Next" onclick="goStep(3)" disabled>Continue →</button>
+        <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+      </div>
+
+      <!-- STEP 3: PAYMENT -->
+      <div id="step3" class="hidden">
+        <div class="step-title">Payment Method</div>
+        <div class="step-sub">Choose how you'd like to pay</div>
+
+        <!-- ORDER REVIEW -->
+        <div class="summary-box" style="margin-bottom:1.8rem;">
+          <div class="sum-row"><span class="sum-label">Order</span><span id="s3Model">—</span></div>
+          <div class="sum-row"><span class="sum-label">Customer</span><span id="s3Name">—</span></div>
+          <div class="sum-row"><span class="sum-label">Location</span><span id="s3Loc">—</span></div>
+          <div class="sum-total"><span>Total Due</span><span id="s3Total">—</span></div>
+        </div>
+
+        <!-- PAYMENT TABS -->
+        <div class="pay-tabs">
+          <button class="pay-tab active" id="tabCash" onclick="setPayment('cash')">Cash</button>
+          <button class="pay-tab" id="tabBank" onclick="setPayment('bank')">Bank Transfer</button>
+          <button class="pay-tab" id="tabCrypto" onclick="setPayment('crypto')">USDT Crypto</button>
+        </div>
+
+        <!-- CASH -->
+        <div class="pay-box show" id="boxCash">
+          <div class="cash-note">
+            <div class="pay-box-label">Cash on Delivery</div>
+            <div class="pay-note">Payment is collected when your order arrives. Please have the exact amount ready.
+            </div>
+          </div>
+        </div>
+
+        <!-- BANK TRANSFER -->
+        <div class="pay-box" id="boxBank">
+          <div class="pay-box-label">Account Holder</div>
+          <div class="pay-box-val" id="ibanName">—</div>
+          <div class="div" style="margin:1rem 0;"></div>
+          <div class="pay-box-label">IBAN (TRY)</div>
+          <div class="pay-box-val" id="ibanNum">—</div>
+          <button class="copy-btn" onclick="copyText('ibanNum','Copy IBAN','✓ Copied')">Copy IBAN</button>
+          <div class="pay-note">Send the exact amount and include your order ID in the description. <strong>Send your
+              transfer receipt/screenshot to our WhatsApp number after payment.</strong></div>
+        </div>
+
+        <!-- CRYPTO -->
+        <div class="pay-box" id="boxCrypto">
+          <div class="pay-box-label">USDT Wallet Address (Polygon)</div>
+          <div class="pay-box-val" id="cryptoAddr">—</div>
+          <button class="copy-btn" onclick="copyText('cryptoAddr','Copy Address','✓ Copied')">Copy Address</button>
+          <div class="div" style="margin:1rem 0;"></div>
+          <div class="pay-box-label">Network</div>
+          <div class="pay-box-val" style="font-size:.8rem;">Polygon</div>
+          <div class="pay-note">⚠ Only send USDT on the Polygon network. Sending on a different network will result in
+            permanent loss. <strong>Send your transfer screenshot to our WhatsApp number after payment.</strong></div>
+        </div>
+
+        <button class="btn-primary" onclick="placeOrder()">Place Order & Generate Invoice →</button>
+        <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+      </div>
       <!-- STEP 4: INVOICE / CONFIRMATION -->
       <div id="step4" class="hidden">
         <div class="invoice-wrap">
