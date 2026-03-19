@@ -154,43 +154,66 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     // Public: Create order
     try {
-      const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      let body;
+      try {
+        body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+      } catch (parseErr) {
+        console.error('[Order API] Body Parse Error:', parseErr.message, 'Raw body:', req.body);
+        return res.status(400).json({ error: 'Invalid request body' });
+      }
+
       const order = body;
+      if (!order || !order.id || !order.productId) {
+        console.error('[Order API] Missing required fields:', { 
+          hasOrder: !!order, 
+          id: order?.id, 
+          productId: order?.productId 
+        });
+        return res.status(400).json({ error: 'Missing order details' });
+      }
+
       console.log(`[Order API] Processing order ${order.id} for ${order.email}`);
       order.createdAt = new Date().toISOString();
 
-      // Decrement stock
-      const stockRef = ref(db, `inventory/${order.productId}/stock`);
-      const snap = await get(stockRef);
-      const current = snap.val() || 0;
-      const newStock = Math.max(0, current - order.qty);
-      await set(stockRef, newStock);
+      // 1. Decrement stock
+      let newStock;
+      try {
+        const stockRef = ref(db, `inventory/${order.productId}/stock`);
+        const snap = await get(stockRef);
+        const current = snap.val() || 0;
+        newStock = Math.max(0, current - order.qty);
+        await set(stockRef, newStock);
+        console.log(`[Order API] Stock updated for ${order.productId}: ${current} -> ${newStock}`);
+      } catch (dbErr) {
+        console.error('[Order API] Database Error (Stock):', dbErr.message);
+        throw new Error(`Database failure updating stock: ${dbErr.message}`);
+      }
 
-      // Save order
-      await set(ref(db, `orders/${order.id}`), order);
+      // 2. Save order
+      try {
+        await set(ref(db, `orders/${order.id}`), order);
+        console.log(`[Order API] Order saved to database: ${order.id}`);
+      } catch (dbErr) {
+        console.error('[Order API] Database Error (Save Order):', dbErr.message);
+        throw new Error(`Database failure saving order: ${dbErr.message}`);
+      }
 
-      // Send email
-      const templateParams = {
-        to_name: order.name,
-        to_email: order.email,
-        order_id: order.id,
-        product_name: order.productName,
-        qty: order.qty,
-        total: `£${order.total}`,
-        payment: order.payment,
-        location: order.deliveryMethod === 'kofali' ? 'Kofali Homes' : 'Couture Dorms'
-      };
-
+      // 3. Send emails (Non-blocking but logged)
       try {
         await sendOrderEmails(order);
-      } catch (e) {
-        console.error('[Order API] Notification Warning:', e.message);
+      } catch (emailErr) {
+        console.error('[Order API] Email Notification Error:', emailErr.message);
+        // We don't throw here to ensure the user gets a success response even if email fails
       }
 
       return res.status(200).json({ success: true, newStock });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Failed to process order' });
+      console.error('[Order API] Fatal Error:', err.message, err.stack);
+      return res.status(500).json({ 
+        error: 'Failed to process order', 
+        details: err.message,
+        timestamp: new Date().toISOString()
+      });
     }
   }
 
