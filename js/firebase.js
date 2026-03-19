@@ -102,7 +102,11 @@ async function saveOrder(order) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
   });
-  if (!res.ok) throw new Error('Failed to save order');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.details || errorData.error || 'Failed to save order');
+  }
+  return res.json();
 }
 
 let _orderTimer = null;

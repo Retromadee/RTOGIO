@@ -184,9 +184,12 @@ async function placeOrder() {
 
   } catch (err) {
     console.error('[FRAMES] Order save failed:', err);
+    // Use the error message from the backend if available
+    const msg = err.message || 'Check your connection and try again.';
+    const btn = document.querySelector('#step3 .btn-primary');
     btn.textContent = 'Error — Try Again';
     btn.disabled = false;
-    showNotif('⚠️ Could not save order. Check your connection and try again.');
+    showNotif(`⚠️ Could not save order: ${msg}`);
   }
 }
 
