@@ -48,7 +48,7 @@ function renderInventoryGrid() {
     grid.innerHTML += `
       <div class="inv-card ${isOos ? 'oos' : ''}" ${!isOos ? `onclick="selectFromGrid('${item.id}')"` : ''}>
         ${tagHTML}
-        <img src="images/product3.jpg" alt="${item.name}" class="inv-card-img">
+        <img src="images/product4.png" alt="${item.name}" class="inv-card-img">
         <div class="inv-name">${item.name}</div>
         <div class="inv-stock-bar">
           <div class="inv-stock-fill ${isLow ? 'low' : isOos ? 'out' : ''}" style="width:${pct}%"></div>
@@ -71,7 +71,7 @@ function renderProdGrid() {
     grid.innerHTML += `
       <div class="prod-opt ${isOos ? 'oos-opt' : ''}" id="po_${item.id}"
            ${!isOos ? `onclick="selectProduct('${item.id}')"` : ''}>
-        <img src="images/product2.jpg" alt="${item.name}" class="po-img">
+        <img src="images/product4.png" alt="${item.name}" class="po-img">
         <div class="po-name">${item.name}</div>
         <div class="po-stk">${isOos ? 'Out of stock' : item.stock + ' left'}</div>
         <div class="po-price">${CONFIG.currency}${item.price}</div>

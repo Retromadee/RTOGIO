@@ -313,7 +313,7 @@ async function addNewProduct() {
   const product = {
     id: id,
     name: name,
-    image: document.getElementById('addImage').value.trim() || 'images/product.jpg',
+    image: document.getElementById('addImage').value.trim() || 'images/product4.png',
     price: parseFloat(document.getElementById('addPrice').value) || 25,
     stock: Math.max(0, Math.min(CONFIG.maxStock, parseInt(document.getElementById('addStock').value) || 24))
   };
