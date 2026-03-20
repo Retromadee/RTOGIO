@@ -29,7 +29,7 @@ async function sendOrderEmails(order) {
     await resend.emails.send({
       from: 'onboarding@resend.dev', // Use default for unverified domains
       to: order.email,
-      subject: `rto.GiO Order Confirmed : ${order.id}`,
+      subject: `rtro.GIO Order Confirmed : ${order.id}`,
       html: `
         <div style="font-family:sans-serif; max-width:600px; margin:0 auto; border:1px solid #eee; padding:20px;">
           <h2 style="color:#000;">Thank you for your order, ${order.name}!</h2>
@@ -57,9 +57,9 @@ async function sendOrderEmails(order) {
   }
   try {
     await resend.emails.send({
-      from: 'rto.GiO Notifications <onboarding@resend.dev>',
+      from: 'rtro.GIO Notifications <onboarding@resend.dev>',
       to: adminEmailList,
-      subject: `rto.GiO NEW ORDER : ${order.id} - ${order.name}`,
+      subject: `rtro.GIO NEW ORDER : ${order.id} - ${order.name}`,
       html: `
         <div style="font-family:sans-serif; padding:20px;">
           <h3>New Order Received</h3>
@@ -92,7 +92,7 @@ async function sendStatusEmail({ to_name, to_email, order_id, status_title, stat
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: to_email,
-      subject: `rto.GiO Update on Order ${order_id}: ${status_title}`,
+      subject: `rtro.GIO Update on Order ${order_id}: ${status_title}`,
       html: `
         <div style="font-family:sans-serif; max-width:600px; margin:0 auto; border:1px solid #eee; padding:20px;">
           <h2 style="color:#000;">Order Update</h2>
