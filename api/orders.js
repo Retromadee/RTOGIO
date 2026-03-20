@@ -252,6 +252,21 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Failed' });
     }
   }
+
+  if (req.method === 'DELETE') {
+    // Admin only: Delete order
+    if (!verifyAuth(req)) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const { id } = req.query;
+      if (!id) return res.status(400).json({ error: 'Missing order ID' });
+
+      await set(ref(db, `orders/${id}`), null);
+      return res.status(200).json({ success: true });
+    } catch (err) {
+      console.error('[Order API] Delete Error:', err);
+      return res.status(500).json({ error: 'Failed to delete order' });
+    }
+  }
 }
 
 export { sendOrderEmails, sendStatusEmail };

@@ -120,6 +120,7 @@ function renderOrdersTable(orders) {
             }
             <a class="action-btn wa" href="${buildWALink(order)}" target="_blank">WhatsApp</a>
             <button class="action-btn email" onclick="sendEmailNotif('${order.id}')">Email</button>
+            <button class="action-btn" onclick="deleteOrder('${order.id}')" style="border-color:var(--red); color:var(--red);">🗑️</button>
           </div>
         </td>
       </tr>`;
@@ -193,6 +194,24 @@ async function sendEmailNotif(orderId) {
     adminToast(`✓ Email sent to ${order.email}`);
   } catch (err) {
     adminToast('⚠️ Email failed. Check connection.');
+    console.error(err);
+  }
+}
+
+async function deleteOrder(id) {
+  if (!confirm(`Are you sure you want to delete order ${id}?`)) return;
+  adminToast('Deleting order…');
+  try {
+    const res = await fetch(`/api/orders?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    if (res.ok) {
+      adminToast(`✓ Order ${id} deleted`);
+    } else {
+      throw new Error('Delete failed');
+    }
+  } catch (err) {
+    adminToast('⚠️ Delete failed. Check connection.');
     console.error(err);
   }
 }
