@@ -55,29 +55,32 @@ async function sendOrderEmails(order) {
     console.warn('[Resend] Admin email skipped (Resend not initialized)');
     return;
   }
-  try {
-    await resend.emails.send({
-      from: 'rtro.GIO Notifications <onboarding@resend.dev>',
-      to: adminEmailList,
-      subject: `rtro.GIO NEW ORDER : ${order.id} - ${order.name}`,
-      html: `
-        <div style="font-family:sans-serif; padding:20px;">
-          <h3>New Order Received</h3>
-          <p><strong>Customer:</strong> ${order.name}</p>
-          <p><strong>Item:</strong> ${order.productName} (x${order.qty})</p>
-          <p><strong>Total:</strong> £${order.total}</p>
-          <p><strong>Phone:</strong> ${order.phone}</p>
-          <p><strong>Email:</strong> ${order.email}</p>
-          <p><strong>Payment:</strong> ${order.payment}</p>
-          <p><strong>Location:</strong> ${order.location}</p>
-          <br>
-          <a href="${waUserLink}" style="background:#000; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px;">Contact Customer via WhatsApp</a>
-        </div>
-      `
-    });
-    console.log(`[Resend] Admin alert sent to ${adminEmailList.join(', ')}`);
-  } catch (err) {
-    console.error('[Resend] Admin Email Error:', err.message);
+  
+  for (const email of adminEmailList) {
+    try {
+      const adminRes = await resend.emails.send({
+        from: 'onboarding@resend.dev',
+        to: email,
+        subject: `${brandName} NEW ORDER : ${order.id} - ${order.name}`,
+        html: `
+          <div style="font-family:sans-serif; padding:20px;">
+            <h3>New Order Received</h3>
+            <p><strong>Customer:</strong> ${order.name}</p>
+            <p><strong>Item:</strong> ${order.productName} (x${order.qty})</p>
+            <p><strong>Total:</strong> £${order.total}</p>
+            <p><strong>Phone:</strong> ${order.phone}</p>
+            <p><strong>Email:</strong> ${order.email}</p>
+            <p><strong>Payment:</strong> ${order.payment}</p>
+            <p><strong>Location:</strong> ${order.location}</p>
+            <br>
+            <a href="${waUserLink}" style="background:#000; color:#fff; padding:10px 20px; text-decoration:none; border-radius:5px;">Contact Customer via WhatsApp</a>
+          </div>
+        `
+      });
+      console.log(`[Resend] Admin alert sent to ${email}`, adminRes);
+    } catch (err) {
+      console.error(`[Resend] Admin Email Error (${email}):`, err.message, err);
+    }
   }
 }
 
