@@ -6,23 +6,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>rto.GiO — Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&display=swap"
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Courier+Prime:wght@400;700&family=Inter:wght@400;700;900&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
     .brand-pin {
-      font-family: 'Courier Prime', monospace;
-      font-weight: 700;
-      font-size: 2.8rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 2.5rem;
+      letter-spacing: -0.02em;
+      text-transform: lowercase;
       color: var(--white);
-      letter-spacing: .08em;
-      text-transform: none;
+      display: flex;
+      align-items: baseline;
+      gap: 0.2rem;
+    }
+
+    .brand-pin .by {
+      font-weight: 400;
+      font-size: 1.4rem;
+      color: #666;
     }
 
     .brand-pin .gio {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3.2rem;
-      letter-spacing: .1em;
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 3rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--white);
     }
   </style>
   <!-- Vercel Speed Insights -->
@@ -35,8 +47,8 @@
   <!-- ═══════════════════════════════ PIN SCREEN ═══════════════════════════════ -->
   <div id="pinScreen" class="pin-screen">
     <a href="index.html" style="text-decoration:none;display:block;">
-      <div class="brand-pin" style="margin-bottom: 1.5rem;">
-        <img src="images/logo2.jpg" alt="rto.GiO Logo" style="height: 4.5rem; display: block; margin: 0 auto;">
+      <div class="brand-pin" style="margin-bottom: 2rem;">
+        rtro.<span class="by">by</span><span class="gio">GIO</span>
       </div>
     </a>
     <div style="text-align:center;">
@@ -56,10 +68,12 @@
 
     <!-- HEADER -->
     <div class="admin-header">
-      <a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:1rem;">
-        <img src="images/logo2.jpg" alt="rto.GiO Logo" style="height: 2.8rem;">
+      <a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:1.5rem;">
+        <div style="font-family:'Inter', sans-serif; font-weight:900; font-size:1.2rem; text-transform:lowercase; display:flex; align-items:baseline; gap:0.1rem;">
+          rtro.<span style="font-weight:400; font-size:0.75rem; color:var(--gray); margin:0 0.1rem;">by</span><span style="font-size:1.5rem; text-transform:uppercase;">GIO</span>
+        </div>
         <span
-          style="font-family:'Bebas Neue', sans-serif; font-size:1.4rem; letter-spacing:.1em; text-transform:uppercase;">Admin
+          style="font-family:'Inter', sans-serif; font-weight:700; font-size:1rem; letter-spacing:.05em; text-transform:uppercase; color:var(--gray); border-left:1px solid var(--line); padding-left:1.5rem;">
           Dashboard</span>
       </a>
       <div style="display:flex;gap:1rem;align-items:center;">

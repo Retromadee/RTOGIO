@@ -57,7 +57,7 @@ async function sendOrderEmails(order) {
   }
   try {
     await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'rto.GiO Notifications <onboarding@resend.dev>',
       to: adminEmailList,
       subject: `rto.GiO NEW ORDER : ${order.id} - ${order.name}`,
       html: `
