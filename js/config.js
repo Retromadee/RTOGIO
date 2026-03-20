@@ -8,7 +8,7 @@
 
 // ── 2. BRAND ──────────────────────────────────────────────────────────────────
 const CONFIG = {
-  brandName:   'rtro.GiO',
+  brandName:   'rtro.GIO',
   currency:    '£',
   // Single product max capacity
   maxStock:    24,

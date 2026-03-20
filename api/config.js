@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
     res.status(200).json({
-        brandName: 'rtro.GiO',
+        brandName: 'rtro.GIO',
         currency: '£',
         ibanHolder: 'Emmanuel Anesu Chiwandire',
         iban: process.env.ADMIN_IBAN || 'TR050006400000168060041529',

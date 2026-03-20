@@ -14,7 +14,7 @@ try {
 }
 
 async function sendOrderEmails(order) {
-  const brandName = process.env.BRAND_NAME || 'rtro.GiO';
+  const brandName = process.env.BRAND_NAME || 'rtro.GIO';
   const adminEmailList = (process.env.ADMIN_EMAIL || 'only1retromade@gmail.com').split(',').map(e => e.trim());
   const adminWhatsApp = process.env.ADMIN_WHATSAPP || '905338365711';
   
@@ -82,7 +82,7 @@ async function sendOrderEmails(order) {
 }
 
 async function sendStatusEmail({ to_name, to_email, order_id, status_title, status_desc }) {
-  const brandName = process.env.BRAND_NAME || 'rtro.GiO';
+  const brandName = process.env.BRAND_NAME || 'rtro.GIO';
   
   if (!resend) {
     console.warn('[Resend] Status email skipped (Resend not initialized)');
