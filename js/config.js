@@ -22,7 +22,7 @@ const CONFIG = {
 const DEFAULT_PRODUCT = {
   id:    'product_01',
   name:  'RTRO.01',
-  price: 25,
+  price: 30,
   stock: 24
 };
 

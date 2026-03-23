@@ -40,7 +40,7 @@ function listenToInventory(callback) {
         const data = await res.json();
         // Dynamic pricing: increase to £30 when stock falls below 11
         data.forEach(p => {
-          if (p.stock < 11) p.price = 30;
+          if (p.stock < 11) p.price = 40;
         });
         callback(data);
       }
