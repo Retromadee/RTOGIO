@@ -146,7 +146,7 @@ async function placeOrder() {
     String(now.getDate()).padStart(2, '0') +
     '-' + suffix;
 
-  const payLabels = { cash: 'Cash on Delivery', bank: 'Bank Transfer', crypto: 'USDT (Polygon)' };
+  const payLabels = { cash: 'Cash on Delivery', bank: 'Bank Transfer', crypto: 'USDT (TRC20)' };
 
   const order = {
     id:           orderId,
