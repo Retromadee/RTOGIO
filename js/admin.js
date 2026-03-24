@@ -314,7 +314,7 @@ async function addNewProduct() {
     id: id,
     name: name,
     image: document.getElementById('addImage').value.trim() || 'images/product4.png',
-    price: parseFloat(document.getElementById('addPrice').value) || 25,
+    price: parseFloat(document.getElementById('addPrice').value) || 30,
     stock: Math.max(0, Math.min(CONFIG.maxStock, parseInt(document.getElementById('addStock').value) || 24))
   };
   try {
@@ -326,7 +326,7 @@ async function addNewProduct() {
     adminToast('✓ Product added');
     document.getElementById('addName').value = '';
     document.getElementById('addImage').value = '';
-    document.getElementById('addPrice').value = '25';
+    document.getElementById('addPrice').value = '30';
     document.getElementById('addStock').value = '24';
   } catch (e) {
     adminToast('⚠️ Failed to add. Check connection.');
