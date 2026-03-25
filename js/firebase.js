@@ -38,9 +38,9 @@ function listenToInventory(callback) {
       const res = await fetch('/api/inventory', { cache: 'no-store', credentials: 'same-origin' });
       if (res.ok) {
         const data = await res.json();
-        // Dynamic pricing: increase to £30 when stock falls below 11
+        // Dynamic pricing: increase to £35 when stock falls below 11
         data.forEach(p => {
-          if (p.stock < 11) p.price = 40;
+          if (p.stock < 11) p.price = 35;
         });
         callback(data);
       }

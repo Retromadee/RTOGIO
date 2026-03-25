@@ -116,6 +116,14 @@ function fillStep3Review() {
 }
 
 function setPayment(method) {
+  // Bank Transfer: redirect straight to WhatsApp, no details shown
+  if (method === 'bank' && CONFIG.adminWhatsapp && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
+    const waMsg = encodeURIComponent("Hi! I want to pay via bank transfer. Please send me the bank details.");
+    const waLink = `https://wa.me/${CONFIG.adminWhatsapp.replace(/\D/g, '')}?text=${waMsg}`;
+    window.open(waLink, '_blank');
+    return; // Don't switch the tab — keep user on current payment view
+  }
+
   orderState.paymentMethod = method;
   ['cash', 'bank', 'crypto'].forEach(m => {
     const cap = m.charAt(0).toUpperCase() + m.slice(1);
@@ -181,6 +189,17 @@ async function placeOrder() {
     orderState.order = order;
     populateInvoice(order);
     goStep(4);
+
+    // 6. Automatic Redirect for Bank Transfer
+    if (orderState.paymentMethod === 'bank' && CONFIG.adminWhatsapp && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
+      const waMsg = encodeURIComponent(`Hi! I want to pay via bank transfer for my order ${orderId}.`);
+      const waLink = `https://wa.me/${CONFIG.adminWhatsapp.replace(/\D/g, '')}?text=${waMsg}`;
+      
+      // Delay slightly so they see the Step 4 "Order Placed" screen first
+      setTimeout(() => {
+        window.open(waLink, '_blank');
+      }, 1500);
+    }
 
   } catch (err) {
     console.error('[FRAMES] Order save failed:', err);
@@ -333,8 +352,18 @@ async function handleProofUpload(event) {
 
 function setPaymentInfo() {
   const el = (id) => document.getElementById(id);
-  if (el('ibanName'))   el('ibanName').textContent   = CONFIG.ibanHolder;
-  if (el('ibanNum'))    el('ibanNum').textContent     = CONFIG.iban;
+  
+  // Bank Transfer WhatsApp Link
+  const bankWaBtn = el('bankWaBtn');
+  if (bankWaBtn && CONFIG.adminWhatsapp && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
+    const msg = encodeURIComponent("Hi! I'm interested in ordering frames via Bank Transfer. Could you please provide the bank details?");
+    bankWaBtn.href = `https://wa.me/${CONFIG.adminWhatsapp.replace(/\D/g, '')}?text=${msg}`;
+  }
+
+  // Remove IBAN details population as they are now hidden
+  // if (el('ibanName'))   el('ibanName').textContent   = CONFIG.ibanHolder;
+  // if (el('ibanNum'))    el('ibanNum').textContent     = CONFIG.iban;
+  
   if (el('cryptoAddr')) el('cryptoAddr').textContent = CONFIG.usdtAddress;
 }
 
