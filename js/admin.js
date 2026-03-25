@@ -221,6 +221,13 @@ async function deleteOrder(id) {
 function renderAdminInventory(items) {
   const list = document.getElementById('adminInvRow');
   if (!list) return;
+
+  // Guard: skip re-render if admin is actively editing an input field
+  const activeEl = document.activeElement;
+  if (activeEl && activeEl.tagName === 'INPUT' && list.contains(activeEl)) {
+    return; // Don't overwrite while user is editing
+  }
+
   list.innerHTML = '';
   items.forEach(product => {
     // We use CONFIG.maxStock as a fallback, but per-product maxStock is better if we have it
