@@ -116,14 +116,6 @@ function fillStep3Review() {
 }
 
 function setPayment(method) {
-  // Bank Transfer: redirect straight to WhatsApp, no details shown
-  if (method === 'bank' && CONFIG.adminWhatsapp && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
-    const waMsg = encodeURIComponent("Hi! I want to pay via bank transfer. Please send me the bank details.");
-    const waLink = `https://wa.me/${CONFIG.adminWhatsapp.replace(/\D/g, '')}?text=${waMsg}`;
-    window.open(waLink, '_blank');
-    return; // Don't switch the tab — keep user on current payment view
-  }
-
   orderState.paymentMethod = method;
   ['cash', 'bank', 'crypto'].forEach(m => {
     const cap = m.charAt(0).toUpperCase() + m.slice(1);
@@ -190,9 +182,21 @@ async function placeOrder() {
     populateInvoice(order);
     goStep(4);
 
-    // 6. Automatic Redirect for Bank Transfer
+    // 6. Automatic WhatsApp redirect for Bank Transfer — send full order details to admin
     if (orderState.paymentMethod === 'bank' && CONFIG.adminWhatsapp && CONFIG.adminWhatsapp !== '90XXXXXXXXXX') {
-      const waMsg = encodeURIComponent(`Hi! I want to pay via bank transfer for my order ${orderId}.`);
+      const waMsg = encodeURIComponent(
+        `🏦 *Bank Transfer Request*\n\n` +
+        `📋 *Order ID:* ${order.id}\n` +
+        `👤 *Customer:* ${order.name}\n` +
+        `📞 *Phone:* ${order.phone}\n` +
+        `📧 *Email:* ${order.email}\n` +
+        `📍 *Location:* ${order.location}\n\n` +
+        `🕶️ *Product:* ${order.productName}\n` +
+        `📦 *Quantity:* ${order.qty}\n` +
+        `💰 *Total:* ${CONFIG.currency}${order.total.toLocaleString()}\n` +
+        `💳 *Payment:* Bank Transfer\n\n` +
+        `Hi! I would like to pay via bank transfer for the above order. Please send me the bank details. Thank you!`
+      );
       const waLink = `https://wa.me/${CONFIG.adminWhatsapp.replace(/\D/g, '')}?text=${waMsg}`;
       
       // Delay slightly so they see the Step 4 "Order Placed" screen first
