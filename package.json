@@ -4,6 +4,7 @@
   "description": "Serverless backend",
   "type": "module",
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "cookie": "^0.6.0",
     "firebase": "^12.10.0",
